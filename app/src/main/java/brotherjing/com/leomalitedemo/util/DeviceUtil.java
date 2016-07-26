@@ -310,7 +310,6 @@ public final class DeviceUtil {
 	 * @param context
 	 * @return
 	 */
-	// TODO
 	// public static boolean isEmulator(Context context) {
 	// try {
 	// return Build.MODEL.toLowerCase().indexOf("sdk") > -1

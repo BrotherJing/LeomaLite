@@ -20,7 +20,9 @@ public class App extends Application{
         super.onCreate();
         context = this;
 
-        LeomaConfig.init("leoma","http://ct.ctrip.com/m/");
+        LeomaConfig.init(this);
+        LeomaConfig.KEYWORD = "leoma";
+        LeomaConfig.BASE_URL ="http://ct.ctrip.com/m/";
         LeomaConfig.USER_AGENT = AppUtil.getUserAgent();
 
         Leoma.getInstance().registerHandlersForClass(AppNavigationHandler.class);

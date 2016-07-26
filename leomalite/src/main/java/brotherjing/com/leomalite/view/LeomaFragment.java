@@ -53,7 +53,6 @@ public class LeomaFragment extends Fragment{
         if(data==null) {
             webView.loadUrl(url);
         }else{
-            //TODO: turn data into url query
             StringBuilder stringBuilder = new StringBuilder();
             Iterator<Map.Entry<String,JsonElement>> keys = data.entrySet().iterator();
             while(keys.hasNext()){

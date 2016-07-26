@@ -1,5 +1,7 @@
 package brotherjing.com.leomalite;
 
+import android.content.Context;
+
 /**
  * Created by jingyanga on 2016/7/25.
  */
@@ -11,13 +13,10 @@ public class LeomaConfig {
     public static String SESSION_ID;
     public static String USER_AGENT;
 
-    public static void init(){
-        KEYWORD = "leoma";
-    }
+    public static Context context;
 
-    public static void init(String keyword, String baseUrl){
-        KEYWORD = keyword;
-        BASE_URL = baseUrl;
+    public static void init(Context context){
+        LeomaConfig.context = context;
     }
 
 }

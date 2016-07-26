@@ -1,7 +1,9 @@
 package brotherjing.com.leomalite.util;
 
+import android.net.Uri;
 import android.text.TextUtils;
 import android.webkit.CookieManager;
+import android.webkit.MimeTypeMap;
 import android.webkit.WebSettings;
 
 /**
@@ -23,5 +25,30 @@ public class DeviceUtil {
         }
         return sessionID;
     }
+
+
+    public static String getMimeType(Uri path) {
+        if (path == null) {
+            return mimeTypeOfExtension(null);
+        }
+        String lastComp = path.getLastPathSegment();
+        if (lastComp.contains(".")) {
+            return mimeTypeOfExtension(lastComp.substring(lastComp.lastIndexOf(".") + 1));
+        }
+        return mimeTypeOfExtension("html");
+    }
+
+
+    private static String mimeTypeOfExtension(String extension) {
+        if (extension == null) {
+            return "file/*";
+        }
+        String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        if (type != null && !type.isEmpty()) {
+            return type;
+        }
+        return "application/octet-stream";
+    }
+
 
 }

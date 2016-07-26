@@ -49,18 +49,21 @@ public class LeomaNavigator {
 
     public void performShowBottom(){
         FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
-        transaction.replace(fragmentContainer.getId(), fragmentStack.get(0)).commit();
+        transaction.add(fragmentContainer.getId(), fragmentStack.get(0));
+        transaction.disallowAddToBackStack();
+        transaction.commit();
     }
 
     public void performPop(boolean animated){
         Logger.i("perform pop");
         if(currentIndex<=0)return;
         FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
-        transaction.hide(fragmentStack.get(currentIndex));
-        transaction.show(fragmentStack.get(currentIndex-1));
-        if(animated){
+        if(true||animated){
             transaction.setCustomAnimations(R.anim.frame_anim_from_left,R.anim.frame_anim_to_right);
         }
+        transaction.show(fragmentStack.get(currentIndex-1));
+        transaction.hide(fragmentStack.get(currentIndex));
+        transaction.disallowAddToBackStack();
         transaction.commit();
 
         currentIndex--;
@@ -74,14 +77,15 @@ public class LeomaNavigator {
     public void performPush(boolean animated){
         if(currentIndex>=fragmentStack.size()-1)return;
         FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
-        transaction.hide(fragmentStack.get(currentIndex));
+        if(true||animated){
+            transaction.setCustomAnimations(R.anim.frame_anim_from_right,R.anim.frame_anim_to_left);
+        }
         if(currentLoadingFragment.isAdded())
             transaction.show(fragmentStack.get(currentIndex+1));
         else
             transaction.add(fragmentContainer.getId(),currentLoadingFragment);
-        if(true||animated){
-            transaction.setCustomAnimations(R.anim.frame_anim_from_right,R.anim.frame_anim_to_left);
-        }
+        transaction.hide(fragmentStack.get(currentIndex));
+        transaction.disallowAddToBackStack();
         transaction.commit();
 
         currentIndex++;
@@ -95,6 +99,7 @@ public class LeomaNavigator {
             transaction.show(currentLoadingFragment);
         else
             transaction.add(fragmentContainer.getId(),currentLoadingFragment);
+        transaction.disallowAddToBackStack();
         transaction.commit();
 
         pushBackPool(fragmentStack.remove(currentIndex));
@@ -118,7 +123,7 @@ public class LeomaNavigator {
                 break;
             case PrepareNavigationInfo.NAVI_POP:
                 currentLoadingFragment = fragmentStack.get(currentIndex-1);
-                return;
+                break;
             case PrepareNavigationInfo.NAVI_RELOAD:
                 currentLoadingFragment = currentFragment();
                 break;

@@ -32,7 +32,7 @@ public class LeomaWebView extends WebView {
         super(activity);
         this.activity = activity;
         this.leomaHandlerInterceptor = new LeomaHandlerInterceptor(activity,this);
-        this.leomaCacheInterceptor = new LeomaCacheInterceptor();
+        this.leomaCacheInterceptor = new LeomaCacheInterceptor(this);
 
         setSettings();
         setWebViewClient(webViewClient);
@@ -57,7 +57,6 @@ public class LeomaWebView extends WebView {
 
     private void setSettings(){
         WebSettings settings = getSettings();
-        //TODO: get user-agent
         settings.setUserAgentString(settings.getUserAgentString()+"\\"+ LeomaConfig.USER_AGENT);
         settings.setAppCachePath(getContext().getCacheDir().getPath());
         Logger.i(getContext().getCacheDir().getPath());
