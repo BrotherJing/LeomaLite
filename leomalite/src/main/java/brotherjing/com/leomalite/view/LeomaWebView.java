@@ -26,6 +26,8 @@ public class LeomaWebView extends WebView {
     private LeomaHandlerInterceptor leomaHandlerInterceptor;
     private LeomaCacheInterceptor leomaCacheInterceptor;
 
+    private String JSBackMethod;
+
     public LeomaWebView(Activity activity) {
         super(activity);
         this.activity = activity;
@@ -35,6 +37,22 @@ public class LeomaWebView extends WebView {
         setSettings();
         setWebViewClient(webViewClient);
         setWebChromeClient(webChromeClient);
+    }
+
+    public void loadMiddlePage(String data){
+        loadData(data,"text/html","utf-8");
+    }
+
+    public void executeJS(String jsCode){
+        loadUrl("javascript:"+jsCode);
+    }
+
+    public void setJSBackMethod(String JSBackMethod){
+        this.JSBackMethod = JSBackMethod;
+    }
+
+    public Activity getActivity(){
+        return activity;
     }
 
     private void setSettings(){
@@ -93,4 +111,5 @@ public class LeomaWebView extends WebView {
     private WebChromeClient webChromeClient = new WebChromeClient(){
 
     };
+
 }

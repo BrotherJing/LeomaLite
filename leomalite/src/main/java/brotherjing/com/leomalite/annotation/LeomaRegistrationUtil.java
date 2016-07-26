@@ -3,7 +3,6 @@ package brotherjing.com.leomalite.annotation;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
-import brotherjing.com.leomalite.handler.AppNavigationHandler;
 import brotherjing.com.leomalite.handler.LeomaHandler;
 import brotherjing.com.leomalite.util.Logger;
 
@@ -13,8 +12,7 @@ import brotherjing.com.leomalite.util.Logger;
 public class LeomaRegistrationUtil {
 
     public void registerDefaultHandlers(HashMap<String,LeomaHandler> handlers){
-        registerHandlersForClass(AppNavigationHandler.class, handlers);
-        //TODO: other handler
+        //TODO: default handler
     }
 
     public void registerHandlersForClass(Class<?> clazz, HashMap<String,LeomaHandler> handlers){

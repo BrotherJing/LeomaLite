@@ -1,28 +1,24 @@
 package brotherjing.com.leomalitedemo;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
-import android.widget.FrameLayout;
 
 import brotherjing.com.leomalite.LeomaConfig;
-import brotherjing.com.leomalite.view.LeomaFragment;
+import brotherjing.com.leomalite.view.LeomaActivity;
 
-public class MainActivity extends AppCompatActivity {
-
-    private FrameLayout container;
+public class MainActivity extends LeomaActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    }
 
-        container = (FrameLayout)findViewById(R.id.webview_container);
-        LeomaFragment leomaFragment = LeomaFragment.newInstance(this);
+    @Override
+    public String getFirstPageUrl() {
+        return LeomaConfig.BASE_URL;
+    }
 
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.add(container.getId(),leomaFragment).commit();
-
-        leomaFragment.initWebView(LeomaConfig.BASE_URL,null);
+    @Override
+    public int getInitialWebViewCount() {
+        return 2;
     }
 }

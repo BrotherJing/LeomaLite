@@ -8,7 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.json.JSONObject;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import java.util.Iterator;
+import java.util.Map;
+
+import brotherjing.com.leomalite.util.Logger;
 
 /**
  * Created by jingyanga on 2016/7/25.
@@ -36,17 +42,31 @@ public class LeomaFragment extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        if(webView.getParent()!=null){
+        if(webView!=null&&webView.getParent()!=null&&container!=null){
             container.removeView(webView);
         }
         return webView;
     }
 
-    public void initWebView(String url, JSONObject data){
+    public void initWebView(String url, JsonObject data){
+        Logger.i("init with url: "+url);
         if(data==null) {
             webView.loadUrl(url);
         }else{
-
+            //TODO: turn data into url query
+            StringBuilder stringBuilder = new StringBuilder();
+            Iterator<Map.Entry<String,JsonElement>> keys = data.entrySet().iterator();
+            while(keys.hasNext()){
+                Map.Entry<String,JsonElement> entry = keys.next();
+                stringBuilder.append(entry.getKey()).append("=").append(entry.getValue());
+                if(keys.hasNext())
+                    stringBuilder.append("&");
+            }
+            webView.postUrl(url,stringBuilder.toString().replaceAll("\"","").getBytes());
         }
+    }
+
+    public LeomaWebView getWebView() {
+        return webView;
     }
 }

@@ -1,6 +1,7 @@
 package brotherjing.com.leomalite.handler;
 
 import android.webkit.WebResourceResponse;
+
 import com.google.gson.JsonObject;
 import brotherjing.com.leomalite.view.LeomaWebView;
 
