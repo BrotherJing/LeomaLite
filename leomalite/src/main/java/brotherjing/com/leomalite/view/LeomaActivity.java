@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.FrameLayout;
 
-import brotherjing.com.leomalite.LeomaNavigator;
 import brotherjing.com.leomalite.R;
 
 /**
@@ -29,8 +28,15 @@ public abstract class LeomaActivity extends AppCompatActivity {
         FrameLayout fragmentContainer = (FrameLayout) findViewById(R.id.webview_container);
         leomaNavigator = new LeomaNavigator(this, fragmentContainer, getInitialWebViewCount());
 
-        leomaNavigator.currentFragment().initWebView(getFirstPageUrl(),null);
+        leomaNavigator.currentFragment().getWebView().initWithURL(getFirstPageUrl(),null);
         leomaNavigator.performShowBottom();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(!leomaNavigator.handleBackPressed()){
+            super.onBackPressed();
+        }
     }
 
     public LeomaNavigator getLeomaNavigator(){

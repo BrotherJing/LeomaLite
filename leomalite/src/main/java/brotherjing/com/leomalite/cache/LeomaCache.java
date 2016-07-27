@@ -2,7 +2,9 @@ package brotherjing.com.leomalite.cache;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Looper;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.util.HashMap;
 
 import brotherjing.com.leomalite.LeomaConfig;
 import brotherjing.com.leomalite.util.Logger;
@@ -33,10 +36,13 @@ public class LeomaCache {
     private static SharedPreferences spResourceVersion;
     private static SharedPreferences spResourceCachePath;
 
+    private static HashMap<String,String> resourceCachePathMap;
+
     static {
         spManifestVersion = SharedPrefUtil.getSharedPreferences(LeomaConfig.context, SP_MANIFEST_VERSION, Context.MODE_PRIVATE);
         spResourceVersion = SharedPrefUtil.getSharedPreferences(LeomaConfig.context, SP_RESOURCE_VERSION, Context.MODE_PRIVATE);
         spResourceCachePath = SharedPrefUtil.getSharedPreferences(LeomaConfig.context, SP_RESOURCE_CACHE_PATH, Context.MODE_PRIVATE);
+        resourceCachePathMap = new HashMap<>();
     }
 
     public static boolean isNewVersion(String version, String manifestURLWithoutQuery){
@@ -94,7 +100,12 @@ public class LeomaCache {
     }
 
     public static InputStream getCachedStream(String url){
-        String path = SharedPrefUtil.getString(spResourceCachePath,url,"");
+        String path = resourceCachePathMap.get(url);
+        if(path==null) {
+            path = SharedPrefUtil.getString(spResourceCachePath, url, null);
+            if(path!=null)resourceCachePathMap.put(url,path);
+            else return null;
+        }
         try {
             return new FileInputStream(new File(path));
         }catch (FileNotFoundException e){

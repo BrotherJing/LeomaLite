@@ -10,9 +10,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 
-import brotherjing.com.leomalite.annotation.LeomaRegistrationUtil;
+import brotherjing.com.leomalite.annotation.LeomaApiRegistrationUtil;
 import brotherjing.com.leomalite.exception.LeomaHandlerNotExistException;
-import brotherjing.com.leomalite.handler.LeomaHandler;
+import brotherjing.com.leomalite.handler.LeomaApiHandler;
 import brotherjing.com.leomalite.view.LeomaWebView;
 
 /**
@@ -22,8 +22,8 @@ public class Leoma {
 
     private static Leoma instance;
 
-    private LeomaRegistrationUtil leomaRegistrationUtil;
-    private HashMap<String,LeomaHandler> leomaHandlers;
+    private LeomaApiRegistrationUtil leomaApiRegistrationUtil;
+    private HashMap<String,LeomaApiHandler> leomaHandlers;
 
     public synchronized static Leoma getInstance(){
         if(instance==null){
@@ -34,17 +34,17 @@ public class Leoma {
 
     public Leoma() {
         leomaHandlers = new HashMap<>();
-        leomaRegistrationUtil = new LeomaRegistrationUtil();
-        leomaRegistrationUtil.registerDefaultHandlers(leomaHandlers);
+        leomaApiRegistrationUtil = new LeomaApiRegistrationUtil();
+        leomaApiRegistrationUtil.registerDefaultHandlers(leomaHandlers);
     }
 
     public void registerHandlersForClass(Class<?> clazz){
-        leomaRegistrationUtil.registerHandlersForClass(clazz, leomaHandlers);
+        leomaApiRegistrationUtil.registerHandlersForClass(clazz, leomaHandlers);
     }
 
     public WebResourceResponse callHandler(String handlerName,String data,LeomaWebView webView)throws LeomaHandlerNotExistException{
         WebResourceResponse response = new WebResourceResponse("application/json", "UTF-8", null);
-        LeomaHandler handler = leomaHandlers.get(handlerName);
+        LeomaApiHandler handler = leomaHandlers.get(handlerName);
         if(handler==null){
             throw new LeomaHandlerNotExistException(handlerName);
         }

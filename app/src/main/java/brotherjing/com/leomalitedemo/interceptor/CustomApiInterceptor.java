@@ -1,14 +1,11 @@
 package brotherjing.com.leomalitedemo.interceptor;
 
-import android.app.Activity;
-
-import brotherjing.com.leomalite.LeomaHandlerInterceptor;
-import brotherjing.com.leomalite.view.LeomaWebView;
+import brotherjing.com.leomalite.interceptor.LeomaApiInterceptor;
 
 /**
  * Created by jingyanga on 2016/7/27.
  */
-public class CustomApiInterceptor extends LeomaHandlerInterceptor{
+public class CustomApiInterceptor extends LeomaApiInterceptor {
 
     protected boolean shouldRunOnMainThread(String method){
         return method!=null &&

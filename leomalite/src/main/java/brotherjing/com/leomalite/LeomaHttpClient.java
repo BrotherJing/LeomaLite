@@ -29,7 +29,6 @@ public class LeomaHttpClient {
 
     public synchronized static OkHttpClient getHttpClient(){
         if(client==null){
-            //TODO: initialize okhttp client
             client = new OkHttpClient.Builder()
                     .connectTimeout(15, TimeUnit.SECONDS)
                     .readTimeout(20, TimeUnit.SECONDS)

@@ -7,9 +7,9 @@ import com.google.gson.JsonObject;
 
 import java.io.UnsupportedEncodingException;
 
-import brotherjing.com.leomalite.LeomaNavigator;
+import brotherjing.com.leomalite.view.LeomaNavigator;
 import brotherjing.com.leomalite.annotation.LeomaApi;
-import brotherjing.com.leomalite.handler.LeomaHandler;
+import brotherjing.com.leomalite.handler.LeomaApiHandler;
 import brotherjing.com.leomalite.model.DoNavigationInfo;
 import brotherjing.com.leomalite.model.PrepareNavigationInfo;
 import brotherjing.com.leomalite.util.Logger;
@@ -24,11 +24,12 @@ import brotherjing.com.leomalitedemo.api.FinishHandlerUtil;
 public class AppNavigationHandler {
 
     @LeomaApi(methodName = "app_navigator",handlerName = "init_page")
-    public static LeomaHandler initPage(){
-        return new LeomaHandler(){
+    public static LeomaApiHandler initPage(){
+        return new LeomaApiHandler(){
             @Override
             public void execute(JsonObject data, WebResourceResponse response, LeomaWebView webView) {
-                Logger.i("initPage, data is "+data.toString());
+                //Logger.i("initPage, data is "+data.toString());
+                Logger.startTimer("init page");
                 try {
                     if (data == null) {
                         FinishHandlerUtil.finishHandlerSyncly(CorpApi.ResponseStatusCode.Error, null, response);
@@ -47,18 +48,18 @@ public class AppNavigationHandler {
     }
 
     @LeomaApi(methodName = "app_navigator",handlerName = "navigate_page")
-    public static LeomaHandler navigatePage(){
-        return new LeomaHandler() {
+    public static LeomaApiHandler navigatePage(){
+        return new LeomaApiHandler() {
             @Override
             public void execute(JsonObject data, WebResourceResponse response, LeomaWebView webView) {
-                Logger.i("navigatePage, data is "+data.toString());
+                Logger.pin("navigatePage, data is "+data.toString());
                 try{
                     if(data==null){
                         FinishHandlerUtil.finishHandlerSyncly(CorpApi.ResponseStatusCode.Fail,null,response);
                     }else{
                         DoNavigationInfo doNavigationInfo = new Gson().fromJson(data,DoNavigationInfo.class);
                         LeomaNavigator navigator = ((LeomaActivity)webView.getActivity()).getLeomaNavigator();
-                        navigator.doNavigation(doNavigationInfo);
+                        //navigator.doNavigation(doNavigationInfo);
                         FinishHandlerUtil.finishHandlerSyncly(CorpApi.ResponseStatusCode.Success,null,response);
                     }
                 }catch (UnsupportedEncodingException e){

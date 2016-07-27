@@ -1,17 +1,19 @@
-package brotherjing.com.leomalite;
+package brotherjing.com.leomalite.interceptor;
 
 import android.app.Activity;
 import android.webkit.WebResourceResponse;
 
 import java.net.URL;
 
+import brotherjing.com.leomalite.Leoma;
+import brotherjing.com.leomalite.LeomaConfig;
 import brotherjing.com.leomalite.exception.LeomaHandlerNotExistException;
 import brotherjing.com.leomalite.view.LeomaWebView;
 
 /**
  * Created by jingyanga on 2016/7/25.
  */
-public abstract class LeomaHandlerInterceptor {
+public abstract class LeomaApiInterceptor {
 
     public WebResourceResponse intercept(final LeomaWebView webView, URL url){
 

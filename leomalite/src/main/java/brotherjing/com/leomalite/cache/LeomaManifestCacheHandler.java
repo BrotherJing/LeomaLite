@@ -113,7 +113,6 @@ public class LeomaManifestCacheHandler {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     e.printStackTrace();
-                    //TODO: cancel all calls for resourceURLs?
                     if(listener!=null)listener.onFailed(webView);
                 }
 
