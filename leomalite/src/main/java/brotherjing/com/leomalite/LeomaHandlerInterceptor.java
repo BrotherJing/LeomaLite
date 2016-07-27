@@ -35,7 +35,7 @@ public class LeomaHandlerInterceptor {
                     try {
                         Leoma.getInstance().callHandler(method,data,webView);
                     } catch (LeomaHandlerNotExistException e) {
-                        e.printStackTrace();
+                        //e.printStackTrace();
                     }
                 }
             });
@@ -44,7 +44,7 @@ public class LeomaHandlerInterceptor {
             try {
                 return Leoma.getInstance().callHandler(method,data,webView);
             } catch (LeomaHandlerNotExistException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
         return null;

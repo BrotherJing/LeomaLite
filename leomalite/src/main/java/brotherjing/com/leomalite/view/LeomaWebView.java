@@ -59,7 +59,6 @@ public class LeomaWebView extends WebView {
         WebSettings settings = getSettings();
         settings.setUserAgentString(settings.getUserAgentString()+"\\"+ LeomaConfig.USER_AGENT);
         settings.setAppCachePath(getContext().getCacheDir().getPath());
-        Logger.i(getContext().getCacheDir().getPath());
         settings.setJavaScriptEnabled(true);
         settings.setAppCacheEnabled(true);
         settings.setDomStorageEnabled(true);

@@ -26,7 +26,7 @@ public class LeomaCacheInterceptor {
     public WebResourceResponse intercept(URL url){
         if(url.getPath().endsWith("manifest")){
             Logger.i("manifest: "+url.toString());
-            new LeomaManifestCacheHandler(webView).handleManifest(url,null);
+            new LeomaManifestCacheHandler(webView,null).handleManifest(url);
             return new WebResourceResponse("text/html","utf-8",null);
         }
         //TODO: resource cache
@@ -35,6 +35,7 @@ public class LeomaCacheInterceptor {
             Logger.i("hit! "+url.toString());
             return new WebResourceResponse(DeviceUtil.getMimeType(Uri.parse(url.toString())), "utf-8", inputStream);
         }
+        Logger.i("miss! "+url.toString());
         return null;
     }
 

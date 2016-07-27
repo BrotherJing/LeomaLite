@@ -16,6 +16,7 @@ import java.net.URL;
 import brotherjing.com.leomalite.LeomaConfig;
 import brotherjing.com.leomalite.util.Logger;
 import brotherjing.com.leomalite.util.SharedPrefUtil;
+import brotherjing.com.leomalite.util.VersionChecker;
 
 /**
  * Created by jingyanga on 2016/7/26.
@@ -40,7 +41,20 @@ public class LeomaCache {
 
     public static boolean isNewVersion(String version, String manifestURLWithoutQuery){
         String oldVersion = SharedPrefUtil.getString(spManifestVersion, manifestURLWithoutQuery,null);
-        return TextUtils.isEmpty(oldVersion) || !oldVersion.endsWith(version);
+        return TextUtils.isEmpty(oldVersion) || VersionChecker.isNewerVersion(version,oldVersion);
+    }
+
+    public static boolean isResourceNewVersion(String version, URL resourceURL){
+        String oldVersion = SharedPrefUtil.getString(spResourceVersion,resourceURL.toString(),null);
+        return TextUtils.isEmpty(oldVersion)||VersionChecker.isNewerVersion(version,oldVersion);
+    }
+
+    public static void storeResourceNewVersion(String version, URL resourceURL){
+        SharedPrefUtil.putString(spResourceVersion, resourceURL.toString(), version);
+    }
+
+    public static void storeManifestNewVersion(String version, String manifestURLWithoutQuery){
+        SharedPrefUtil.putString(spManifestVersion,manifestURLWithoutQuery,version);
     }
 
     public static File generateFile(URL resourceURL){
@@ -81,7 +95,6 @@ public class LeomaCache {
 
     public static InputStream getCachedStream(String url){
         String path = SharedPrefUtil.getString(spResourceCachePath,url,"");
-        Logger.i("cache: "+path);
         try {
             return new FileInputStream(new File(path));
         }catch (FileNotFoundException e){

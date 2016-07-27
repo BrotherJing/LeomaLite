@@ -1,16 +1,12 @@
 package brotherjing.com.leomalite.cache;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.text.TextUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -19,9 +15,7 @@ import java.util.ArrayList;
 
 import brotherjing.com.leomalite.LeomaHttpClient;
 import brotherjing.com.leomalite.dispatcher.LeomaTaskDispatcher;
-import brotherjing.com.leomalite.model.LeomaStringResponse;
 import brotherjing.com.leomalite.util.Logger;
-import brotherjing.com.leomalite.util.SharedPrefUtil;
 import brotherjing.com.leomalite.view.LeomaWebView;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -33,20 +27,21 @@ import okhttp3.Response;
 public class LeomaManifestCacheHandler {
 
     private LeomaWebView webView;
-    private SharedPreferences manifestSP;
+    private OnLeomaCacheFinishListener listener;
 
     private String version;
+    private int successCount = 0;
 
-    public LeomaManifestCacheHandler(LeomaWebView webView){
+    public LeomaManifestCacheHandler(LeomaWebView webView, OnLeomaCacheFinishListener listener){
         this.webView = webView;
+        this.listener = listener;
     }
 
-    public void handleManifest(final URL manifestURL, OnLeomaCacheFinishListener listener){
+    public void handleManifest(final URL manifestURL){
         LeomaTaskDispatcher.runBackground(new Runnable() {
             @Override
             public void run() {
                 try {
-                    //initManifest(manifestURL);
                     Reader response = LeomaHttpClient.syncGetStream(manifestURL.toString());
                     ArrayList<URL> resourceURLs = parseManifest(manifestURL, response);
                     fetchResources(resourceURLs, manifestURL);
@@ -60,24 +55,18 @@ public class LeomaManifestCacheHandler {
     public interface OnLeomaCacheFinishListener{
         void onSuccess();
         void onFailed();
-    }
-
-    private void initManifest(URL manifestURL){
-        String paths[] = manifestURL.getPath().split("/");
-        String spName = paths[paths.length-1];
-        String prefix = manifestURL.getHost()+"_";
-        //manifestSP = SharedPrefUtil.getSharedPreferences(context,prefix+spName,Context.MODE_PRIVATE);
+        void onNoNeedUpdate();
     }
 
     private ArrayList<URL> parseManifest(URL manifestURL, Reader response) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(response);
         String line;
-        ArrayList<URL> resourceURL = new ArrayList<>();
+        ArrayList<URL> resourceURLs = new ArrayList<>();
         boolean isReadingCacheEntry = false;
         while((line=bufferedReader.readLine())!=null){
             String lower = line.toLowerCase();
             if(lower.contains("version")){
-                version = lower;
+                version = lower.split("\\s+")[1];
                 if(!LeomaCache.isNewVersion(version,manifestURL.getHost()+manifestURL.getPath())){
                     //TODO: no need to update
                     break;
@@ -89,35 +78,41 @@ public class LeomaManifestCacheHandler {
             }else{
                 if(isReadingCacheEntry&&line.length()>1){
                     try {
-                        resourceURL.add(new URL(line));
+                        URL resourceURL = new URL(line);
+                        if(LeomaCache.isResourceNewVersion(version,resourceURL)) {
+                            resourceURLs.add(resourceURL);
+                            Logger.i("need to download: "+line);
+                        }
                     }catch (MalformedURLException e){
                         e.printStackTrace();
-                        continue;
                     }
-                    Logger.i("need to download: "+line);
                 }
             }
         }
-        return resourceURL;
-    }
-
-    private void fetchResources(ArrayList<URL> resourceURLs, URL manifestURL) throws UnsupportedEncodingException {
         String[] queries = manifestURL.getQuery().split("&");
         for(String query : queries){
             if(query.startsWith("fromurl")){
                 try {
-                    resourceURLs.add(new URL(URLDecoder.decode(query.split("=")[1], "utf-8")));
+                    URL fromURL = new URL(URLDecoder.decode(query.split("=")[1], "utf-8"));
+                    if(LeomaCache.isResourceNewVersion(version,fromURL))
+                        resourceURLs.add(fromURL);
                 }catch (MalformedURLException e){
                     break;
                 }
                 break;
             }
         }
+        return resourceURLs;
+    }
+
+    private void fetchResources(final ArrayList<URL> resourceURLs, final URL manifestURL) throws UnsupportedEncodingException {
+
         for(final URL url : resourceURLs){
             LeomaHttpClient.asyncGet(url, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-
+                    e.printStackTrace();
+                    //TODO: cancel all calls for resourceURLs?
                 }
 
                 @Override
@@ -125,7 +120,15 @@ public class LeomaManifestCacheHandler {
                     File file = LeomaCache.generateFile(url);
                     InputStream inputStream = response.body().byteStream();
                     LeomaCache.storeInFile(inputStream,file,url);
+                    LeomaCache.storeResourceNewVersion(version,url);
+
                     Logger.i("downloaded: "+url+" into "+file.getPath());
+                    synchronized (LeomaManifestCacheHandler.this){
+                        if((++successCount)==resourceURLs.size()){
+                            LeomaCache.storeManifestNewVersion(version,manifestURL.getHost()+manifestURL.getPath());
+                            Logger.i("need to download "+resourceURLs.size()+", downloaded "+successCount);
+                        }
+                    }
                 }
             });
         }
