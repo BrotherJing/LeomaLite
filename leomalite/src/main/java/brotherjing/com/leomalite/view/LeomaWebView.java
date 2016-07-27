@@ -28,11 +28,11 @@ public class LeomaWebView extends WebView {
 
     private String JSBackMethod;
 
-    public LeomaWebView(Activity activity) {
+    public LeomaWebView(Activity activity, LeomaHandlerInterceptor leomaHandlerInterceptor, LeomaCacheInterceptor leomaCacheInterceptor) {
         super(activity);
         this.activity = activity;
-        this.leomaHandlerInterceptor = new LeomaHandlerInterceptor(activity,this);
-        this.leomaCacheInterceptor = new LeomaCacheInterceptor(this);
+        this.leomaHandlerInterceptor = leomaHandlerInterceptor;
+        this.leomaCacheInterceptor = leomaCacheInterceptor;
 
         setSettings();
         setWebViewClient(webViewClient);
@@ -87,9 +87,9 @@ public class LeomaWebView extends WebView {
             }
 
             WebResourceResponse response;
-            response=leomaHandlerInterceptor.intercept(url);
+            response=leomaHandlerInterceptor.intercept(LeomaWebView.this, url);
             if(response==null)
-                response=leomaCacheInterceptor.intercept(url);
+                response=leomaCacheInterceptor.intercept(LeomaWebView.this, url);
             return response;
         }
 
@@ -109,5 +109,30 @@ public class LeomaWebView extends WebView {
     private WebChromeClient webChromeClient = new WebChromeClient(){
 
     };
+
+    public static class Builder{
+
+        private Activity activity;
+        private LeomaHandlerInterceptor leomaHandlerInterceptor;
+        private LeomaCacheInterceptor leomaCacheInterceptor;
+
+        public Builder(Activity activity){
+            this.activity = activity;
+        }
+
+        public Builder addApiInterceptor(LeomaHandlerInterceptor interceptor){
+            leomaHandlerInterceptor = interceptor;
+            return this;
+        }
+
+        public Builder addCacheInterceptor(LeomaCacheInterceptor interceptor){
+            leomaCacheInterceptor = interceptor;
+            return this;
+        }
+
+        public LeomaWebView build(){
+            return new LeomaWebView(activity,leomaHandlerInterceptor,leomaCacheInterceptor);
+        }
+    }
 
 }

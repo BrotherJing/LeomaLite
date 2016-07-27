@@ -15,7 +15,6 @@ public abstract class LeomaActivity extends AppCompatActivity {
 
     private Handler mainHandler;
     private LeomaNavigator leomaNavigator;
-    private FrameLayout fragmentContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +26,7 @@ public abstract class LeomaActivity extends AppCompatActivity {
     private void init(){
         mainHandler = new Handler(getMainLooper());
 
-        fragmentContainer = (FrameLayout)findViewById(R.id.webview_container);
+        FrameLayout fragmentContainer = (FrameLayout) findViewById(R.id.webview_container);
         leomaNavigator = new LeomaNavigator(this, fragmentContainer, getInitialWebViewCount());
 
         leomaNavigator.currentFragment().initWebView(getFirstPageUrl(),null);
@@ -45,5 +44,7 @@ public abstract class LeomaActivity extends AppCompatActivity {
     public abstract String getFirstPageUrl();
 
     public abstract int getInitialWebViewCount();
+
+    public abstract LeomaWebView createWebView();
 
 }

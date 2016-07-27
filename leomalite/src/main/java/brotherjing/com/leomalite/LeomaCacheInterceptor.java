@@ -17,13 +17,7 @@ import brotherjing.com.leomalite.view.LeomaWebView;
  */
 public class LeomaCacheInterceptor {
 
-    private LeomaWebView webView;
-
-    public LeomaCacheInterceptor(LeomaWebView webView){
-        this.webView = webView;
-    }
-
-    public WebResourceResponse intercept(URL url){
+    public WebResourceResponse intercept(LeomaWebView webView, URL url){
         if(url.getPath().endsWith("manifest")){
             Logger.i("manifest: "+url.toString());
             new LeomaManifestCacheHandler(webView,null).handleManifest(url);

@@ -11,17 +11,9 @@ import brotherjing.com.leomalite.view.LeomaWebView;
 /**
  * Created by jingyanga on 2016/7/25.
  */
-public class LeomaHandlerInterceptor {
+public abstract class LeomaHandlerInterceptor {
 
-    private Activity activity;
-    private LeomaWebView webView;
-
-    public LeomaHandlerInterceptor(Activity activity, LeomaWebView webView){
-        this.activity = activity;
-        this.webView = webView;
-    }
-
-    public WebResourceResponse intercept(URL url){
+    public WebResourceResponse intercept(final LeomaWebView webView, URL url){
 
         if(!url.toString().contains(LeomaConfig.KEYWORD))return null;
 
@@ -29,7 +21,7 @@ public class LeomaHandlerInterceptor {
         final String data = url.getQuery();
 
         if(shouldRunOnMainThread(method)){
-            activity.runOnUiThread(new Runnable() {
+            webView.getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     try {
@@ -50,12 +42,5 @@ public class LeomaHandlerInterceptor {
         return null;
     }
 
-    private boolean shouldRunOnMainThread(String method){
-        return method!=null &&
-                (method.contains("app_navigator")||
-                method.contains("native_location")||
-                method.contains("native_scene")||
-                method.contains("paste_board"));
-    }
-
+    protected abstract boolean shouldRunOnMainThread(String method);
 }

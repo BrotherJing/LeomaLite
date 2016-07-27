@@ -53,9 +53,9 @@ public class LeomaManifestCacheHandler {
     }
 
     public interface OnLeomaCacheFinishListener{
-        void onSuccess();
-        void onFailed();
-        void onNoNeedUpdate();
+        void onSuccess(LeomaWebView webView);
+        void onFailed(LeomaWebView webView);
+        void onNoNeedUpdate(LeomaWebView webView);
     }
 
     private ArrayList<URL> parseManifest(URL manifestURL, Reader response) throws IOException {
@@ -68,8 +68,8 @@ public class LeomaManifestCacheHandler {
             if(lower.contains("version")){
                 version = lower.split("\\s+")[1];
                 if(!LeomaCache.isNewVersion(version,manifestURL.getHost()+manifestURL.getPath())){
-                    //TODO: no need to update
-                    break;
+                    if(listener!=null)listener.onNoNeedUpdate(webView);
+                    return resourceURLs;
                 }
             }else if(lower.startsWith("cache:")){
                 isReadingCacheEntry = true;
@@ -97,6 +97,7 @@ public class LeomaManifestCacheHandler {
                     if(LeomaCache.isResourceNewVersion(version,fromURL))
                         resourceURLs.add(fromURL);
                 }catch (MalformedURLException e){
+                    e.printStackTrace();
                     break;
                 }
                 break;
@@ -113,6 +114,7 @@ public class LeomaManifestCacheHandler {
                 public void onFailure(Call call, IOException e) {
                     e.printStackTrace();
                     //TODO: cancel all calls for resourceURLs?
+                    if(listener!=null)listener.onFailed(webView);
                 }
 
                 @Override
@@ -127,6 +129,7 @@ public class LeomaManifestCacheHandler {
                         if((++successCount)==resourceURLs.size()){
                             LeomaCache.storeManifestNewVersion(version,manifestURL.getHost()+manifestURL.getPath());
                             Logger.i("need to download "+resourceURLs.size()+", downloaded "+successCount);
+                            if(listener!=null)listener.onSuccess(webView);
                         }
                     }
                 }

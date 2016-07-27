@@ -22,19 +22,19 @@ import brotherjing.com.leomalite.util.Logger;
 public class LeomaFragment extends Fragment{
 
     private LeomaWebView webView;
-    private Activity activity;
+    private LeomaActivity activity;
 
-    public static LeomaFragment newInstance(Activity activity){
+    public static LeomaFragment newInstance(LeomaActivity activity){
         return new LeomaFragment(activity);
     }
 
-    private LeomaFragment(Activity activity){
+    private LeomaFragment(LeomaActivity activity){
         this.activity = activity;
         init();
     }
 
     private void init(){
-        webView = new LeomaWebView(activity);
+        webView = activity.createWebView();
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         webView.setLayoutParams(params);
     }
