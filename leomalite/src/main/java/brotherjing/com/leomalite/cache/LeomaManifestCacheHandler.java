@@ -69,7 +69,7 @@ public class LeomaManifestCacheHandler {
                 version = lower.split("\\s+")[1];
                 if(!LeomaCache.isNewVersion(version,manifestURL.getHost()+manifestURL.getPath())){
                     if(listener!=null)listener.onNoNeedUpdate(webView);
-                    return resourceURLs;
+                    break;
                 }
             }else if(lower.startsWith("cache:")){
                 isReadingCacheEntry = true;

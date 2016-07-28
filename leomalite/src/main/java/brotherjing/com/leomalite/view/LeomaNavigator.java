@@ -110,8 +110,10 @@ public class LeomaNavigator {
         if(currentPrepareNavigationInfo !=null)return;
         currentPrepareNavigationInfo = prepareNavigationInfo;
 
-        LeomaBitmapCache.putDrawingCache(currentFragment().getWebView().getInitURL(),
-                LeomaBitmapCache.createDrawingCache(currentFragment().getWebView()));
+        /*LeomaBitmapCache.putDrawingCache(currentFragment().getWebView().getInitURL(),
+                LeomaBitmapCache.createDrawingCache(currentFragment().getWebView()));*/
+        LeomaBitmapCache.storeDrawingCache(currentFragment().getWebView().getInitURL(),
+                currentFragment().getWebView());
 
         //decide current loading fragment
         switch (prepareNavigationInfo.getNavigateType()){
