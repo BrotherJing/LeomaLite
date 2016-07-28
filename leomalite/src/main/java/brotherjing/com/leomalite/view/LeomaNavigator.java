@@ -9,12 +9,9 @@ import java.util.List;
 
 import brotherjing.com.leomalite.LeomaBitmapCache;
 import brotherjing.com.leomalite.R;
-import brotherjing.com.leomalite.dispatcher.LeomaTaskDispatcher;
 import brotherjing.com.leomalite.model.DoNavigationInfo;
 import brotherjing.com.leomalite.model.PrepareNavigationInfo;
 import brotherjing.com.leomalite.util.Logger;
-import brotherjing.com.leomalite.view.LeomaActivity;
-import brotherjing.com.leomalite.view.LeomaFragment;
 
 /**
  * Created by jingyanga on 2016/7/25.
@@ -128,6 +125,10 @@ public class LeomaNavigator {
                 currentLoadingFragment = fragmentStack.get(currentIndex+1);
                 break;
             case PrepareNavigationInfo.NAVI_POP:
+                if(currentIndex<=0){
+                    currentPrepareNavigationInfo = null;
+                    return;
+                }
                 currentLoadingFragment = fragmentStack.get(currentIndex-1);
                 break;
             case PrepareNavigationInfo.NAVI_RELOAD:
@@ -140,8 +141,7 @@ public class LeomaNavigator {
             performPop(prepareNavigationInfo.isAnimated());
             finishNavigation(0, true);
             return;
-        }
-        else if(prepareNavigationInfo.getNavigateType() == PrepareNavigationInfo.NAVI_RELOAD && TextUtils.isEmpty(prepareNavigationInfo.getUrl())){
+        } else if(prepareNavigationInfo.getNavigateType() == PrepareNavigationInfo.NAVI_RELOAD && TextUtils.isEmpty(prepareNavigationInfo.getUrl())){
             currentLoadingFragment.getWebView().reload();
         }else{
             currentLoadingFragment.getWebView().initWithURL(prepareNavigationInfo.getUrl(), prepareNavigationInfo.getData());

@@ -28,7 +28,7 @@ public class AppNavigationHandler {
         return new LeomaApiHandler(){
             @Override
             public void execute(JsonObject data, WebResourceResponse response, LeomaWebView webView) {
-                //Logger.i("initPage, data is "+data.toString());
+                //Logger.i("initPage, webview is "+webView.getInitURL());
                 Logger.startTimer("init page");
                 try {
                     if (data == null) {

@@ -1,9 +1,7 @@
 package brotherjing.com.leomalite.view;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,12 +12,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import java.lang.ref.WeakReference;
-import java.util.Iterator;
-import java.util.Map;
 
 import brotherjing.com.leomalite.R;
 import brotherjing.com.leomalite.util.Logger;
@@ -32,8 +25,7 @@ public class LeomaFragment extends Fragment{
     private LeomaWebView webView;
     private LeomaActivity activity;
 
-    //private WeakReference<Bitmap> drawingCache;
-    private Bitmap drawingCache;
+    private WeakReference<Bitmap> drawingCache;
     private FrameLayout drawingCacheLayout;
 
     public static LeomaFragment newInstance(LeomaActivity activity){
@@ -42,32 +34,22 @@ public class LeomaFragment extends Fragment{
 
     private LeomaFragment(LeomaActivity activity){
         this.activity = activity;
-        init();
     }
 
-    private void init(){
+    private void initWebView(){
         webView = activity.createWebView();
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         webView.setLayoutParams(params);
+    }
+
+    private void initDrawingCacheView(){
 
         drawingCacheLayout = new FrameLayout(activity){
             @Override
-            protected void onDraw(Canvas canvas) {
-                Logger.i("on draw");
-                if(drawingCache!=null){
-                    canvas.drawBitmap(drawingCache,0,0,null);
-                    Logger.i("cache drawn");
-                }
-            }
-            @Override
             public void draw(Canvas canvas) {
                 super.draw(canvas);
-                /*if(drawingCache.get()!=null) {
-                    canvas.drawBitmap(drawingCache.get(), 0, 0, null);
-                    Logger.i("cache drawn");
-                }*/
-                if(drawingCache!=null){
-                    canvas.drawBitmap(drawingCache,0,0,null);
+                if(drawingCache.get()!=null){
+                    canvas.drawBitmap(drawingCache.get(),0,0,null);
                     Logger.i("cache drawn");
                 }
             }
@@ -77,25 +59,21 @@ public class LeomaFragment extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        /*if(webView!=null&&webView.getParent()!=null&&container!=null){
-            container.removeView(webView);
-        }
-        return webView;*/
+        if(webView==null)initWebView();
+        if(drawingCacheLayout==null)initDrawingCacheView();
         FrameLayout mainView = (FrameLayout)inflater.inflate(R.layout.leoma_fragment,container,false);
         mainView.addView(webView);
         return mainView;
     }
 
     public void showDrawingCache(Bitmap drawingCache){
-        //this.drawingCache = new WeakReference<>(drawingCache);
-        this.drawingCache = drawingCache;
+        this.drawingCache = new WeakReference<>(drawingCache);
+        if(drawingCacheLayout==null)initDrawingCacheView();
         if(drawingCacheLayout.getParent()==null){
             if ((getView()) != null) {
                 ((FrameLayout)getView()).addView(drawingCacheLayout,new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             }
         }
-        //((FrameLayout)getView()).postInvalidate();
-        //drawingCacheLayout.postInvalidate();
         drawingCacheLayout.setBackgroundColor(0xffffff);
         webView.setOnLeomaWebViewFinishListener(new LeomaWebView.OnLeomaWebViewLoadFinishListener() {
             @Override
@@ -109,10 +87,11 @@ public class LeomaFragment extends Fragment{
         if ((getView()) != null) {
             ((FrameLayout)getView()).removeView(drawingCacheLayout);
         }
-        //drawingCache.clear();
+        drawingCache.clear();
     }
 
     public LeomaWebView getWebView() {
+        if(webView==null)initWebView();
         return webView;
     }
 

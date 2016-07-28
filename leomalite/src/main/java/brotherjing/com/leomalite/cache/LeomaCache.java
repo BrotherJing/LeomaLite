@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.WeakHashMap;
 
 import brotherjing.com.leomalite.LeomaConfig;
 import brotherjing.com.leomalite.util.Logger;
@@ -36,13 +37,13 @@ public class LeomaCache {
     private static SharedPreferences spResourceVersion;
     private static SharedPreferences spResourceCachePath;
 
-    private static HashMap<String,String> resourceCachePathMap;
+    private static WeakHashMap<String,String> resourceCachePathMap;
 
     static {
         spManifestVersion = SharedPrefUtil.getSharedPreferences(LeomaConfig.context, SP_MANIFEST_VERSION, Context.MODE_PRIVATE);
         spResourceVersion = SharedPrefUtil.getSharedPreferences(LeomaConfig.context, SP_RESOURCE_VERSION, Context.MODE_PRIVATE);
         spResourceCachePath = SharedPrefUtil.getSharedPreferences(LeomaConfig.context, SP_RESOURCE_CACHE_PATH, Context.MODE_PRIVATE);
-        resourceCachePathMap = new HashMap<>();
+        resourceCachePathMap = new WeakHashMap<>();
     }
 
     public static boolean isNewVersion(String version, String manifestURLWithoutQuery){
