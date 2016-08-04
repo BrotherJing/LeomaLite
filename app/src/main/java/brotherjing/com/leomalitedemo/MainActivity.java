@@ -9,8 +9,6 @@ import brotherjing.com.leomalite.interceptor.LeomaCacheInterceptor;
 import brotherjing.com.leomalite.util.Logger;
 import brotherjing.com.leomalite.view.LeomaActivity;
 import brotherjing.com.leomalite.view.LeomaWebView;
-import brotherjing.com.leomalitedemo.interceptor.CustomApiInterceptor;
-import brotherjing.com.leomalitedemo.interceptor.CustomCacheInterceptor;
 
 public class MainActivity extends LeomaActivity {
 

@@ -1,4 +1,4 @@
-package brotherjing.com.leomalite;
+package brotherjing.com.leomalite.cache;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

@@ -20,6 +20,7 @@ import java.util.Map;
 import brotherjing.com.leomalite.interceptor.LeomaCacheInterceptor;
 import brotherjing.com.leomalite.LeomaConfig;
 import brotherjing.com.leomalite.interceptor.LeomaApiInterceptor;
+import brotherjing.com.leomalite.interceptor.LeomaURLInterceptor;
 import brotherjing.com.leomalite.util.DeviceUtil;
 import brotherjing.com.leomalite.util.Logger;
 
@@ -29,8 +30,10 @@ import brotherjing.com.leomalite.util.Logger;
 public class LeomaWebView extends WebView {
 
     private Activity activity;
+    private LeomaFragment container;
     private LeomaApiInterceptor leomaApiInterceptor;
     private LeomaCacheInterceptor leomaCacheInterceptor;
+    private LeomaURLInterceptor leomaURLInterceptor;
     private OnLeomaWebViewLoadFinishListener listener;
 
     private String initURL;
@@ -41,6 +44,7 @@ public class LeomaWebView extends WebView {
         this.activity = activity;
         this.leomaApiInterceptor = leomaApiInterceptor;
         this.leomaCacheInterceptor = leomaCacheInterceptor;
+        this.leomaURLInterceptor = new LeomaURLInterceptor();
 
         setSettings();
         setWebViewClient(webViewClient);
@@ -62,7 +66,12 @@ public class LeomaWebView extends WebView {
     }
 
     public void setJSBackMethod(String JSBackMethod){
+        Logger.i("webview "+initURL+" set js back method:"+JSBackMethod);
         this.JSBackMethod = JSBackMethod;
+    }
+
+    public void setContainer(LeomaFragment leomaFragment){
+        this.container = leomaFragment;
     }
 
     public void setOnLeomaWebViewFinishListener(OnLeomaWebViewLoadFinishListener listener){
@@ -74,6 +83,7 @@ public class LeomaWebView extends WebView {
     }
 
     public boolean handleBackPressed(){
+        Logger.i("back pressed");
         if(!TextUtils.isEmpty(JSBackMethod)){
             executeJS(JSBackMethod+"()");
             return true;
@@ -101,9 +111,14 @@ public class LeomaWebView extends WebView {
         }
     }
 
+    private int getIndexInStack(){
+        return ((LeomaActivity)activity).getLeomaNavigator().indexOf(container);
+    }
+
     private void setSettings(){
         WebSettings settings = getSettings();
-        settings.setUserAgentString(settings.getUserAgentString()+"\\"+ LeomaConfig.USER_AGENT);
+        settings.setUserAgentString(settings.getUserAgentString()+"\\"+ LeomaConfig.USER_AGENT+"CurrentWV="+(getIndexInStack()+1));//TODO: bad design!
+        Logger.i(settings.getUserAgentString());
         settings.setAppCachePath(getContext().getCacheDir().getPath());
         settings.setJavaScriptEnabled(true);
         settings.setAppCacheEnabled(true);
@@ -133,7 +148,9 @@ public class LeomaWebView extends WebView {
             }
 
             WebResourceResponse response;
-            response= leomaApiInterceptor.intercept(LeomaWebView.this, url);
+            response = leomaURLInterceptor.intercept(LeomaWebView.this, url);
+            if(response==null)
+                response = leomaApiInterceptor.intercept(LeomaWebView.this, url);
             if(response==null)
                 response=leomaCacheInterceptor.intercept(LeomaWebView.this, url);
             return response;

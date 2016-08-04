@@ -17,7 +17,7 @@ public abstract class LeomaApiInterceptor {
 
     public WebResourceResponse intercept(final LeomaWebView webView, URL url){
 
-        if(!url.toString().contains(LeomaConfig.KEYWORD))return null;
+        if(LeomaConfig.KEYWORD==null||!url.toString().contains(LeomaConfig.KEYWORD))return null;
 
         final String method = url.getPath().split("/")[2];
         final String data = url.getQuery();

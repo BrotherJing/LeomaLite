@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/webview_container"
-    android:background="#7f7f7f"
     tools:context="brotherjing.com.leomalite.view.LeomaActivity">
 
 </FrameLayout>

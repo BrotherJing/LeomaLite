@@ -7,7 +7,7 @@ import android.widget.FrameLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import brotherjing.com.leomalite.LeomaBitmapCache;
+import brotherjing.com.leomalite.cache.LeomaBitmapCache;
 import brotherjing.com.leomalite.R;
 import brotherjing.com.leomalite.model.DoNavigationInfo;
 import brotherjing.com.leomalite.model.PrepareNavigationInfo;
@@ -94,11 +94,12 @@ public class LeomaNavigator {
     public void performTab(){
         if(currentLoadingFragment==null)return;
         FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
-        transaction.hide(currentFragment());
+        transaction.setCustomAnimations(R.anim.frame_anime_stay, R.anim.frame_anime_stay);
         if(currentLoadingFragment.isAdded())
             transaction.show(currentLoadingFragment);
         else
             transaction.add(fragmentContainer.getId(),currentLoadingFragment);
+        transaction.hide(currentFragment());
         transaction.disallowAddToBackStack();
         transaction.commit();
 
@@ -110,8 +111,6 @@ public class LeomaNavigator {
         if(currentPrepareNavigationInfo !=null)return;
         currentPrepareNavigationInfo = prepareNavigationInfo;
 
-        /*LeomaBitmapCache.putDrawingCache(currentFragment().getWebView().getInitURL(),
-                LeomaBitmapCache.createDrawingCache(currentFragment().getWebView()));*/
         LeomaBitmapCache.storeDrawingCache(currentFragment().getWebView().getInitURL(),
                 currentFragment().getWebView());
 
@@ -142,21 +141,21 @@ public class LeomaNavigator {
         if(prepareNavigationInfo.getNavigateType()==PrepareNavigationInfo.NAVI_POP){
             performPop(prepareNavigationInfo.isAnimated());
             finishNavigation(0, true);
-            return;
         } else if(prepareNavigationInfo.getNavigateType() == PrepareNavigationInfo.NAVI_RELOAD && TextUtils.isEmpty(prepareNavigationInfo.getUrl())){
             currentLoadingFragment.getWebView().reload();
         }else{
             currentLoadingFragment.getWebView().initWithURL(prepareNavigationInfo.getUrl(), prepareNavigationInfo.getData());
         }
+    }
+
+    public void doFastNavigation(){
         if(LeomaBitmapCache.getDrawingCache(currentLoadingFragment.getWebView().getInitURL())!=null){
             Logger.i("drawing cache hit: "+currentLoadingFragment.getWebView().getInitURL());
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     currentLoadingFragment.showDrawingCache(LeomaBitmapCache.getDrawingCache(currentLoadingFragment.getWebView().getInitURL()));
-                    DoNavigationInfo info = new DoNavigationInfo();
-                    info.setJSBackMethod("fw.Native.Back");
-                    doNavigation(info);
+                    doNavigation();
                     Logger.pin("actually do navigation");
                 }
             },100);
@@ -165,18 +164,14 @@ public class LeomaNavigator {
             currentLoadingFragment.getWebView().setOnLeomaWebViewFinishListener(new LeomaWebView.OnLeomaWebViewLoadFinishListener() {
                 @Override
                 public void onFinished(LeomaWebView webView) {
-                    DoNavigationInfo info = new DoNavigationInfo();
-                    info.setJSBackMethod("fw.Native.Back");
-                    doNavigation(info);
+                    doNavigation();
                     Logger.pin("actually do navigation");
                 }
             });
         }
-
     }
 
-    public void doNavigation(DoNavigationInfo doNavigationInfo){
-
+    public void prepareNavigation(DoNavigationInfo doNavigationInfo){
         if(currentPrepareNavigationInfo==null){
             currentFragment().getWebView().setJSBackMethod(doNavigationInfo.getJSBackMethod());
             if(!TextUtils.isEmpty(doNavigationInfo.getMiddlePage())&&currentIndex<fragmentStack.size()-1){
@@ -186,6 +181,10 @@ public class LeomaNavigator {
         }
 
         currentLoadingFragment.getWebView().setJSBackMethod(doNavigationInfo.getJSBackMethod());
+    }
+
+    public void doNavigation(){
+        if(currentPrepareNavigationInfo==null)return;
         if(currentPrepareNavigationInfo.getNavigateType()==PrepareNavigationInfo.NAVI_PUSH){
             performPush(currentPrepareNavigationInfo.isAnimated());
         }else if(currentPrepareNavigationInfo.getNavigateType()==PrepareNavigationInfo.NAVI_TAB){
@@ -195,11 +194,11 @@ public class LeomaNavigator {
     }
 
     public boolean handleBackPressed(){
-        if(currentIndex==0)return false;
         if(currentFragment().getWebView().handleBackPressed()){
             return true;
         }
         if(currentIndex>0){
+            Logger.i("navigator handle back press");
             performPop(true);
             return true;
         }
@@ -233,5 +232,9 @@ public class LeomaNavigator {
 
     private void pushBackPool(LeomaFragment fragment){
         fragmentPool.add(fragment);
+    }
+
+    public int indexOf(LeomaFragment leomaFragment){
+        return fragmentStack.indexOf(leomaFragment);
     }
 }

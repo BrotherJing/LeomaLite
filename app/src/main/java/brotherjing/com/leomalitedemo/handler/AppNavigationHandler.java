@@ -37,6 +37,7 @@ public class AppNavigationHandler {
                         PrepareNavigationInfo prepareNavigationInfo = new Gson().fromJson(data,PrepareNavigationInfo.class);
                         LeomaNavigator navigator = ((LeomaActivity)webView.getActivity()).getLeomaNavigator();
                         navigator.prepareNavigation(prepareNavigationInfo);
+                        //navigator.doFastNavigation();
                         FinishHandlerUtil.finishHandlerSyncly(CorpApi.ResponseStatusCode.Success,null,response);
                     }
                 }catch (UnsupportedEncodingException e){
@@ -59,12 +60,26 @@ public class AppNavigationHandler {
                     }else{
                         DoNavigationInfo doNavigationInfo = new Gson().fromJson(data,DoNavigationInfo.class);
                         LeomaNavigator navigator = ((LeomaActivity)webView.getActivity()).getLeomaNavigator();
-                        //navigator.doNavigation(doNavigationInfo);
+                        navigator.prepareNavigation(doNavigationInfo);
+                        navigator.doNavigation();
                         FinishHandlerUtil.finishHandlerSyncly(CorpApi.ResponseStatusCode.Success,null,response);
                     }
                 }catch (UnsupportedEncodingException e){
                     response.setData(null);
                 }
+            }
+        };
+    }
+
+    @LeomaApi(methodName = "app",handlerName = "go_back")
+    public static LeomaApiHandler goBack(){
+        return new LeomaApiHandler() {
+            @Override
+            public void execute(JsonObject data, WebResourceResponse response, LeomaWebView webView) {
+                if(data!=null&&data.has("exist_app")&&data.get("exist_app").getAsInt()==1)
+                    webView.getActivity().finish();
+                else if(data==null)
+                    webView.getActivity().onBackPressed();
             }
         };
     }

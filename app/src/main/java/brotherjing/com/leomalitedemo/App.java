@@ -25,7 +25,7 @@ public class App extends Application{
         LeomaConfig.BASE_URL ="http://ct.ctrip.com/m/";
         LeomaConfig.USER_AGENT = AppUtil.getUserAgent();
 
-        Leoma.getInstance().registerHandlersForClass(AppNavigationHandler.class);
+        Leoma.getInstance().registerApiHandlerForClass(AppNavigationHandler.class);
     }
 
     public static Context getAppContext(){

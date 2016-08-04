@@ -1,1 +1,1 @@
-include ':app', ':leomalite'
+include ':app', ':leomalite', ':tongqu'

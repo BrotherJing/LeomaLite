@@ -36,6 +36,18 @@ public class PrepareNavigationInfo {
         return NAVI_POP;
     }
 
+    public void setNavigateType(int type){
+        if(type==NAVI_TAB){
+            setTab(true);setReload(false);setPush(false);
+        }
+        else if(type==NAVI_PUSH){
+            setPush(true);setTab(false);setReload(false);
+        }
+        else if(type==NAVI_RELOAD){
+            setReload(true);setPush(false);setTab(false);
+        }
+    }
+
     public String getUrl() {
         return url;
     }
