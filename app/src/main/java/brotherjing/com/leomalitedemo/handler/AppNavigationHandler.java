@@ -28,16 +28,16 @@ public class AppNavigationHandler {
         return new LeomaApiHandler(){
             @Override
             public void execute(JsonObject data, WebResourceResponse response, LeomaWebView webView) {
-                //Logger.i("initPage, webview is "+webView.getInitURL());
-                Logger.startTimer("init page");
+                Logger.i("initPage, webview is "+webView.getInitURL());
+                //Logger.startTimer("init page");
                 try {
                     if (data == null) {
                         FinishHandlerUtil.finishHandlerSyncly(CorpApi.ResponseStatusCode.Error, null, response);
                     }else{
                         PrepareNavigationInfo prepareNavigationInfo = new Gson().fromJson(data,PrepareNavigationInfo.class);
                         LeomaNavigator navigator = ((LeomaActivity)webView.getActivity()).getLeomaNavigator();
-                        navigator.prepareNavigation(prepareNavigationInfo);
-                        //navigator.doFastNavigation();
+                        navigator.completeNavigationInfo(prepareNavigationInfo);
+                        navigator.doFastNavigation();
                         FinishHandlerUtil.finishHandlerSyncly(CorpApi.ResponseStatusCode.Success,null,response);
                     }
                 }catch (UnsupportedEncodingException e){
@@ -53,15 +53,15 @@ public class AppNavigationHandler {
         return new LeomaApiHandler() {
             @Override
             public void execute(JsonObject data, WebResourceResponse response, LeomaWebView webView) {
-                Logger.pin("navigatePage, data is "+data.toString());
+                Logger.i("navigatePage, data is "+data.toString());
                 try{
                     if(data==null){
                         FinishHandlerUtil.finishHandlerSyncly(CorpApi.ResponseStatusCode.Fail,null,response);
                     }else{
                         DoNavigationInfo doNavigationInfo = new Gson().fromJson(data,DoNavigationInfo.class);
                         LeomaNavigator navigator = ((LeomaActivity)webView.getActivity()).getLeomaNavigator();
-                        navigator.prepareNavigation(doNavigationInfo);
-                        navigator.doNavigation();
+                        navigator.completeNavigationInfo(doNavigationInfo);
+                        //navigator.doNavigation();
                         FinishHandlerUtil.finishHandlerSyncly(CorpApi.ResponseStatusCode.Success,null,response);
                     }
                 }catch (UnsupportedEncodingException e){

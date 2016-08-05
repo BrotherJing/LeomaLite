@@ -19,7 +19,7 @@ public class AppUtil {
                 .append(DeviceUtil.getVersionName(App.getAppContext()))
                 .append(",corpctrip,slide,html5Cache,Contacts,File.01,CustomStorage,Leoma,GPS,NativeLocation.1v,WVBridge,AllSite,PartiCache,NativeShare,PasteBoard,Alipay,MutliPages,NoteNative")
                 .append(",Language.").append(DeviceUtil.getSystemLanguage())
-                .append(",Lancount=2c,");
+                .append(",Lancount=2c");
         return builder.toString();
     }
 

@@ -117,7 +117,7 @@ public class LeomaWebView extends WebView {
 
     private void setSettings(){
         WebSettings settings = getSettings();
-        settings.setUserAgentString(settings.getUserAgentString()+"\\"+ LeomaConfig.USER_AGENT+"CurrentWV="+(getIndexInStack()+1));//TODO: bad design!
+        settings.setUserAgentString(settings.getUserAgentString()+"\\"+ LeomaConfig.USER_AGENT);
         Logger.i(settings.getUserAgentString());
         settings.setAppCachePath(getContext().getCacheDir().getPath());
         settings.setJavaScriptEnabled(true);
