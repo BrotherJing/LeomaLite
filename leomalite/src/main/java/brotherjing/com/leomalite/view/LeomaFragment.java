@@ -38,7 +38,6 @@ public class LeomaFragment extends Fragment{
 
     private void initWebView(){
         webView = activity.createWebView();
-        webView.setContainer(this);
         ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         webView.setLayoutParams(params);
     }

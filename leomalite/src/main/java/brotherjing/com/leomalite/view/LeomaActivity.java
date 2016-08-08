@@ -3,6 +3,7 @@ package brotherjing.com.leomalite.view;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
 import brotherjing.com.leomalite.R;
@@ -38,6 +39,13 @@ public abstract class LeomaActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        return (leomaNavigator!=null&&leomaNavigator.handleTouchEvent(ev))||super.dispatchTouchEvent(ev);
+    }
+
+
 
     public LeomaNavigator getLeomaNavigator(){
         return leomaNavigator;

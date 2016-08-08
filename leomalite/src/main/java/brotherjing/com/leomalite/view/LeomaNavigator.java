@@ -1,7 +1,12 @@
 package brotherjing.com.leomalite.view;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewConfiguration;
 import android.widget.FrameLayout;
 
 import java.util.ArrayList;
@@ -107,7 +112,7 @@ public class LeomaNavigator {
         fragmentStack.add(currentIndex,currentLoadingFragment);
     }
 
-    public void completeNavigationInfo(PrepareNavigationInfo prepareNavigationInfo){
+    public void prepareNavigation(PrepareNavigationInfo prepareNavigationInfo){
         if(currentPrepareNavigationInfo !=null)return;
         currentPrepareNavigationInfo = prepareNavigationInfo;
 
@@ -204,6 +209,112 @@ public class LeomaNavigator {
             Logger.i("navigator handle back press");
             performPop(true);
             return true;
+        }
+        return false;
+    }
+
+    private static final int MIN_START_SLIDE_X = 40;
+    private static final int MIN_FINISH_SLIDE_X = 360;
+
+    private int startSlideX;
+    private LeomaFragment slideTo,slideFrom;
+    private boolean isSliding = false;
+
+    public boolean handleTouchEvent(final MotionEvent ev){
+        if(currentIndex==0)return false;
+        switch (ev.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                startSlideX = (int)ev.getX();
+                return false;
+            case MotionEvent.ACTION_MOVE:
+                if(startSlideX>MIN_START_SLIDE_X||ev.getX()-startSlideX<ViewConfiguration.get(activity).getScaledTouchSlop()){
+                    return false;
+                }
+                if(!isSliding) {
+                    isSliding = true;
+                    slideTo = fragmentStack.get(currentIndex - 1);
+                    slideFrom = currentFragment();
+                    FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+                    transaction.show(slideTo).show(slideFrom).commit();
+                    if (slideFrom.getView() != null)
+                        slideFrom.getView().setLayerType(View.LAYER_TYPE_HARDWARE, null);
+                }
+                else {
+                    if (slideFrom.getView() != null) {
+                        slideFrom.getView().setTranslationX(ev.getX() - startSlideX);
+                    }
+                }
+                return true;
+            case MotionEvent.ACTION_UP:
+                if(!isSliding)return false;
+                isSliding = false;
+                ValueAnimator animator = ValueAnimator.ofFloat(1f,0f);
+                animator.addListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        if(slideFrom.getView()!=null)
+                            slideFrom.getView().setLayerType(View.LAYER_TYPE_NONE,null);
+                        if(ev.getX()-startSlideX>MIN_FINISH_SLIDE_X){
+                            if(slideFrom.getView()!=null)
+                                slideFrom.getView().setTranslationX(slideFrom.getView().getWidth());
+                            FragmentTransaction transaction1 = activity.getSupportFragmentManager().beginTransaction();
+                            transaction1.show(slideTo);
+                            transaction1.hide(slideFrom);
+                            transaction1.disallowAddToBackStack();
+                            transaction1.commit();
+                            currentIndex--;
+                            if(fragmentStack.size()>initCapacity){
+                                for(int i=currentIndex;i<fragmentStack.size();++i){
+                                    pushBackPool(fragmentStack.remove(currentIndex+1));
+                                }
+                            }
+                            slideTo.getWebView().executeJS("fw.Native.Page_CrossNotes(14)");
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    slideFrom.getView().setTranslationX(0);
+                                }
+                            },50);
+                        }else{
+                            slideFrom.getView().setTranslationX(0);
+                            FragmentTransaction transaction1 = activity.getSupportFragmentManager().beginTransaction();
+                            transaction1.hide(slideTo);
+                            transaction1.disallowAddToBackStack();
+                            transaction1.commit();
+                        }
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
+
+                    }
+                });
+                if(ev.getX()-startSlideX>MIN_FINISH_SLIDE_X){
+                    animator.setFloatValues(slideFrom.getView().getTranslationX(),slideFrom.getView().getWidth());
+                    animator.setDuration((long)(300*(slideFrom.getView().getWidth()-slideFrom.getView().getTranslationX())/slideFrom.getView().getWidth()));
+                }else{
+                    animator.setFloatValues(slideFrom.getView().getTranslationX(),0f);
+                    animator.setDuration((long)(300*slideFrom.getView().getTranslationX()/slideFrom.getView().getWidth()));
+                }
+                animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                    @Override
+                    public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                        float currentValue = (Float) valueAnimator.getAnimatedValue();
+                        slideFrom.getView().setTranslationX(currentValue);
+                    }
+                });
+                animator.start();
+                return true;
         }
         return false;
     }

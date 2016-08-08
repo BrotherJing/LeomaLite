@@ -36,7 +36,7 @@ public class AppNavigationHandler {
                     }else{
                         PrepareNavigationInfo prepareNavigationInfo = new Gson().fromJson(data,PrepareNavigationInfo.class);
                         LeomaNavigator navigator = ((LeomaActivity)webView.getActivity()).getLeomaNavigator();
-                        navigator.completeNavigationInfo(prepareNavigationInfo);
+                        navigator.prepareNavigation(prepareNavigationInfo);
                         navigator.doFastNavigation();
                         FinishHandlerUtil.finishHandlerSyncly(CorpApi.ResponseStatusCode.Success,null,response);
                     }
