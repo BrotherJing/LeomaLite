@@ -13,7 +13,6 @@ public class TypeUtils {
     public static final ClassName LEOMA_URL_HANDLER = ClassName.get("brotherjing.com.leomalite.handler", "LeomaURLHandler");
     public static final ClassName API_HANDLER_TABLE = ClassName.get("brotherjing.com.leomalite", "ApiHandlerTable");
     public static final ClassName URL_HANDLER_TABLE = ClassName.get("brotherjing.com.leomalite", "URLHandlerTable");
-    public static final ClassName LEOMA_API_FINDER = ClassName.get("brotherjing.com.leomalite", "LeomaApiFinder");
 
     //in java sdk
     public static final ClassName HASHMAP = ClassName.get("java.util", "HashMap");

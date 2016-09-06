@@ -25,9 +25,6 @@ public class Leoma {
 
     private static Leoma instance;
 
-    private HashMap<String,LeomaApiHandler> leomaApiHandlers;
-    private HashMap<String,LeomaURLHandler> leomaURLHandlers;
-
     public LeomaHandlerFinder<LeomaApiHandler> leomaApiFinder;
     public LeomaHandlerFinder<LeomaURLHandler> leomaURLFinder;
 
@@ -39,8 +36,6 @@ public class Leoma {
     }
 
     public Leoma() {
-        leomaApiHandlers = new HashMap<>();
-        leomaURLHandlers = new HashMap<>();
     }
 
     public WebResourceResponse callHandler(String handlerName,String data,LeomaWebView webView)throws LeomaHandlerNotExistException{
@@ -64,21 +59,6 @@ public class Leoma {
     }
 
     public LeomaURLHandler findHandlerForURL(String url){
-
-        /*Map<Integer, Integer> map = new HashMap<Integer, Integer>();
-
-        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
-
-            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
-
-        }*/
-        /*for(HashMap.Entry<String,LeomaURLHandler> entry:leomaURLHandlers.entrySet()){
-            Pattern pattern = Pattern.compile(entry.getKey());
-            Matcher matcher = pattern.matcher(url);
-            if(matcher.find()){
-                return entry.getValue();
-            }
-        }*/
         for(HashMap.Entry<String,LeomaURLHandler> entry:leomaURLFinder.getMap().entrySet()){
             Pattern pattern = Pattern.compile(entry.getKey());
             Matcher matcher = pattern.matcher(url);
