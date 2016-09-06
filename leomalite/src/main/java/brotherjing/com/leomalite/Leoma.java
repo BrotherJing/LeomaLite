@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import brotherjing.com.leomalite.annotation.LeomaHandlerRegistrationUtil;
+import brotherjing.com.leomainjector.LeomaHandlerFinder;
 import brotherjing.com.leomalite.exception.LeomaHandlerNotExistException;
 import brotherjing.com.leomalite.handler.LeomaApiHandler;
 import brotherjing.com.leomalite.handler.LeomaURLHandler;
@@ -25,9 +25,11 @@ public class Leoma {
 
     private static Leoma instance;
 
-    private LeomaHandlerRegistrationUtil leomaHandlerRegistrationUtil;
     private HashMap<String,LeomaApiHandler> leomaApiHandlers;
     private HashMap<String,LeomaURLHandler> leomaURLHandlers;
+
+    public LeomaHandlerFinder<LeomaApiHandler> leomaApiFinder;
+    public LeomaHandlerFinder<LeomaURLHandler> leomaURLFinder;
 
     public synchronized static Leoma getInstance(){
         if(instance==null){
@@ -39,22 +41,11 @@ public class Leoma {
     public Leoma() {
         leomaApiHandlers = new HashMap<>();
         leomaURLHandlers = new HashMap<>();
-
-        leomaHandlerRegistrationUtil = new LeomaHandlerRegistrationUtil();
-        leomaHandlerRegistrationUtil.registerDefaultHandlers(leomaApiHandlers);
-    }
-
-    public void registerApiHandlerForClass(Class<?> clazz){
-        leomaHandlerRegistrationUtil.registerApiHandlerForClass(clazz, leomaApiHandlers);
-    }
-
-    public void registerURLHandlerForClass(Class<?> clazz){
-        leomaHandlerRegistrationUtil.registerURLHandlerForClass(clazz, leomaURLHandlers);
     }
 
     public WebResourceResponse callHandler(String handlerName,String data,LeomaWebView webView)throws LeomaHandlerNotExistException{
         WebResourceResponse response = new WebResourceResponse("application/json", "UTF-8", null);
-        LeomaApiHandler handler = leomaApiHandlers.get(handlerName);
+        LeomaApiHandler handler = leomaApiFinder.getHandler(handlerName);
         if(handler==null){
             throw new LeomaHandlerNotExistException(handlerName);
         }
@@ -81,7 +72,14 @@ public class Leoma {
             System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
 
         }*/
-        for(HashMap.Entry<String,LeomaURLHandler> entry:leomaURLHandlers.entrySet()){
+        /*for(HashMap.Entry<String,LeomaURLHandler> entry:leomaURLHandlers.entrySet()){
+            Pattern pattern = Pattern.compile(entry.getKey());
+            Matcher matcher = pattern.matcher(url);
+            if(matcher.find()){
+                return entry.getValue();
+            }
+        }*/
+        for(HashMap.Entry<String,LeomaURLHandler> entry:leomaURLFinder.getMap().entrySet()){
             Pattern pattern = Pattern.compile(entry.getKey());
             Matcher matcher = pattern.matcher(url);
             if(matcher.find()){

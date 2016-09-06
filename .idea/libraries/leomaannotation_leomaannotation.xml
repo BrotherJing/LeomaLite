@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="leomaannotation.leomaannotation">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/leomaannotation/build/libs/leomaannotation.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

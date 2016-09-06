@@ -4,6 +4,9 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/LeomaLite.iml" filepath="$PROJECT_DIR$/LeomaLite.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/leomaannotation/leomaannotation.iml" filepath="$PROJECT_DIR$/leomaannotation/leomaannotation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/leomacompiler/leomacompiler.iml" filepath="$PROJECT_DIR$/leomacompiler/leomacompiler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/leomainjector/leomainjector.iml" filepath="$PROJECT_DIR$/leomainjector/leomainjector.iml" />
       <module fileurl="file://$PROJECT_DIR$/leomalite/leomalite.iml" filepath="$PROJECT_DIR$/leomalite/leomalite.iml" />
       <module fileurl="file://$PROJECT_DIR$/tongqu/tongqu.iml" filepath="$PROJECT_DIR$/tongqu/tongqu.iml" />
     </modules>
