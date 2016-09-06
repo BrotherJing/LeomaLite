@@ -9,6 +9,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/leomaannotation" />
+            <option value="$PROJECT_DIR$/leomacompiler" />
+            <option value="$PROJECT_DIR$/leomainjector" />
             <option value="$PROJECT_DIR$/leomalite" />
             <option value="$PROJECT_DIR$/tongqu" />
           </set>
@@ -17,6 +20,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/leomaannotation" />
+            <option value="$PROJECT_DIR$/leomacompiler" />
+            <option value="$PROJECT_DIR$/leomainjector" />
             <option value="$PROJECT_DIR$/leomalite" />
             <option value="$PROJECT_DIR$/tongqu" />
           </set>

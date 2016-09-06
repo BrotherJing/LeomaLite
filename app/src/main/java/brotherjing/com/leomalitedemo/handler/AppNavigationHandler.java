@@ -2,13 +2,13 @@ package brotherjing.com.leomalitedemo.handler;
 
 import android.webkit.WebResourceResponse;
 
+import com.example.LeomaApi;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.io.UnsupportedEncodingException;
 
 import brotherjing.com.leomalite.view.LeomaNavigator;
-import brotherjing.com.leomalite.annotation.LeomaApi;
 import brotherjing.com.leomalite.handler.LeomaApiHandler;
 import brotherjing.com.leomalite.model.DoNavigationInfo;
 import brotherjing.com.leomalite.model.PrepareNavigationInfo;

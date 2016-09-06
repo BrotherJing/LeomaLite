@@ -1,1 +1,1 @@
-include ':app', ':leomalite', ':tongqu'
+include ':app', ':leomalite', ':tongqu', ':leomainjector', ':leomaannotation', ':leomacompiler'
