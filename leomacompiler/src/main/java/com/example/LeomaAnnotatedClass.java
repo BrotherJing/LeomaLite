@@ -2,13 +2,10 @@ package com.example;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 
@@ -19,21 +16,34 @@ public class LeomaAnnotatedClass {
 
     public TypeElement mClassElement;
     public Elements mElementUtils;
-    public List<LeomaApiMethod> mMethods;
+    public List<LeomaApiMethod> leomaApiMethods;
+    public List<LeomaURLMethod> leomaURLMethods;
 
     public LeomaAnnotatedClass(TypeElement mClassElement, Elements mElementUtils) {
         this.mClassElement = mClassElement;
         this.mElementUtils = mElementUtils;
-        mMethods = new ArrayList<>();
+        leomaApiMethods = new ArrayList<>();
+        leomaURLMethods = new ArrayList<>();
     }
 
-    public void addLeomaHandlers(String hostName, MethodSpec.Builder injectMethodBuilder){
-        for(LeomaApiMethod method : mMethods){
+    public void addLeomaApiHandlers(String hostName, MethodSpec.Builder injectMethodBuilder){
+        for(LeomaApiMethod method : leomaApiMethods){
             injectMethodBuilder.addStatement(hostName+".put(\""+method.getAnnotatedMethodName()+"."+method.getAnnotatedHandlerName()+"\", $T.$N())", ClassName.get(mClassElement.asType()), method.getMethodName());
         }
     }
 
-    public void addMethod(LeomaApiMethod method){
-        this.mMethods.add(method);
+    public void addLeomaURLHandlers(String hostName, MethodSpec.Builder injectMethodBuilder){
+        for(LeomaURLMethod method : leomaURLMethods){
+            injectMethodBuilder.addStatement(hostName+".put(\""+method.getUrl()+"\", $T.$N())",
+                    ClassName.get(mClassElement.asType()), method.getMethodName());
+        }
+    }
+
+    public void addLeomaApiMethod(LeomaApiMethod method){
+        this.leomaApiMethods.add(method);
+    }
+
+    public void addLeomaURLMethod(LeomaURLMethod method){
+        this.leomaURLMethods.add(method);
     }
 }

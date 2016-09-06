@@ -51,18 +51,42 @@ public class LeomaProcessor extends AbstractProcessor{
                     .addParameter(TypeName.get(leomaClassElement.asType()),"host");
 
             TypeSpec leomaApiFinder = TypeSpec.anonymousClassBuilder("")
-                    .addSuperinterface(TypeUtils.LEOMA_API_FINDER)
-                    .addMethod(MethodSpec.methodBuilder("getApiHandler")
+                    .addSuperinterface(ParameterizedTypeName.get(TypeUtils.LEOMA_HANDLER_FINDER, TypeUtils.LEOMA_API_HANDLER))
+                    .addMethod(MethodSpec.methodBuilder("getHandler")
                         .addAnnotation(Override.class)
                         .addModifiers(Modifier.PUBLIC)
                         .returns(TypeUtils.LEOMA_API_HANDLER)
                         .addParameter(TypeUtils.STRING, "name")
-                        .addStatement("return $T.map.get(name)", TypeUtils.HANDLER_TABLE).build())
+                        .addStatement("return $T.map.get(name)", TypeUtils.API_HANDLER_TABLE).build())
+                    .addMethod(MethodSpec.methodBuilder("getMap")
+                            .addModifiers(Modifier.PUBLIC)
+                            .addAnnotation(Override.class)
+                            .returns(ParameterizedTypeName.get(TypeUtils.HASHMAP, TypeUtils.STRING, TypeUtils.LEOMA_API_HANDLER))
+                            .addStatement("return $T.map", TypeUtils.API_HANDLER_TABLE)
+                            .build())
                     .build();
 
-            injectMethodBuilder.addStatement("$T.inject()", TypeUtils.HANDLER_TABLE);
+            TypeSpec leomaURLFinder = TypeSpec.anonymousClassBuilder("")
+                    .addSuperinterface(ParameterizedTypeName.get(TypeUtils.LEOMA_HANDLER_FINDER, TypeUtils.LEOMA_URL_HANDLER))
+                    .addMethod(MethodSpec.methodBuilder("getHandler")
+                            .addAnnotation(Override.class)
+                            .addModifiers(Modifier.PUBLIC)
+                            .returns(TypeUtils.LEOMA_URL_HANDLER)
+                            .addParameter(TypeUtils.STRING, "name")
+                            .addStatement("return $T.map.get(name)", TypeUtils.URL_HANDLER_TABLE).build())
+                    .addMethod(MethodSpec.methodBuilder("getMap")
+                            .addModifiers(Modifier.PUBLIC)
+                            .addAnnotation(Override.class)
+                            .returns(ParameterizedTypeName.get(TypeUtils.HASHMAP, TypeUtils.STRING, TypeUtils.LEOMA_URL_HANDLER))
+                            .addStatement("return $T.map", TypeUtils.URL_HANDLER_TABLE)
+                            .build())
+                    .build();
+
+            injectMethodBuilder.addStatement("$T.inject()", TypeUtils.API_HANDLER_TABLE);
+            injectMethodBuilder.addStatement("$T.inject()", TypeUtils.URL_HANDLER_TABLE);
 
             injectMethodBuilder.addStatement("$T.getInstance().leomaApiFinder = $L", TypeUtils.LEOMA, leomaApiFinder);
+            injectMethodBuilder.addStatement("$T.getInstance().leomaURLFinder = $L", TypeUtils.LEOMA, leomaURLFinder);
 
             TypeSpec innerInjectorClass = TypeSpec.classBuilder(leomaClassElement.getSimpleName()+"$$InnerInjector")
                     .addSuperinterface(ParameterizedTypeName.get(TypeUtils.INNER_INJECTOR,TypeName.get(leomaClassElement.asType())))
@@ -79,7 +103,7 @@ public class LeomaProcessor extends AbstractProcessor{
             System.out.println(file.toString());
             try {
                 file.writeTo(mFiler);
-                info("generating file for %s", TypeUtils.HANDLER_TABLE.toString());
+                info("generating file for %s", TypeUtils.API_HANDLER_TABLE.toString());
             } catch (IOException e) {
                 info("generating file failed, %s", e.getMessage());
             }

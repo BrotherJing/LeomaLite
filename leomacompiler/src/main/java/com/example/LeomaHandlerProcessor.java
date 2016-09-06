@@ -30,7 +30,7 @@ import javax.tools.Diagnostic;
  * Created by jingyanga on 2016/9/6.
  */
 @AutoService(Processor.class)
-public class LeomaApiProcessor extends AbstractProcessor {
+public class LeomaHandlerProcessor extends AbstractProcessor {
 
     private Filer mFiler;
     private Elements mElementUtils;
@@ -50,6 +50,7 @@ public class LeomaApiProcessor extends AbstractProcessor {
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> types = new LinkedHashSet<>();
         types.add(LeomaApi.class.getCanonicalName());
+        types.add(LeomaURL.class.getCanonicalName());
         return types;
     }
 
@@ -62,7 +63,52 @@ public class LeomaApiProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         mAnnotatedClassMap.clear();
         processLeomaApi(roundEnv);
+        processLeomaURL(roundEnv);
+        return true;
+    }
 
+    private void processLeomaURL(RoundEnvironment roundEnv){
+        for(Element element : roundEnv.getElementsAnnotatedWith(LeomaURL.class)){
+            LeomaAnnotatedClass annotatedClass = getAnnotatedClass(element);
+            LeomaURLMethod method = new LeomaURLMethod(element);
+            annotatedClass.addLeomaURLMethod(method);
+        }
+        FieldSpec hashMapField = FieldSpec.builder(ParameterizedTypeName.get(TypeUtils.HASHMAP, TypeUtils.STRING, TypeUtils.LEOMA_URL_HANDLER),
+                "map", Modifier.PUBLIC, Modifier.STATIC).build();
+
+        MethodSpec.Builder methodSpecBuilder = MethodSpec.methodBuilder("inject")
+                .addModifiers(Modifier.PUBLIC, Modifier.STATIC);
+
+        methodSpecBuilder.addStatement("map = new $T()", ParameterizedTypeName.get(TypeUtils.HASHMAP, TypeUtils.STRING, TypeUtils.LEOMA_URL_HANDLER));
+
+        for(LeomaAnnotatedClass annotatedClass:mAnnotatedClassMap.values()){
+            annotatedClass.addLeomaURLHandlers("map",methodSpecBuilder);
+        }
+
+        TypeSpec handlerTableClass = TypeSpec.classBuilder(TypeUtils.URL_HANDLER_TABLE)
+                .addModifiers(Modifier.PUBLIC)
+                .addField(hashMapField)
+                .addMethod(methodSpecBuilder.build())
+                .build();
+
+        String packageName = TypeUtils.URL_HANDLER_TABLE.packageName();
+
+        JavaFile file = JavaFile.builder(packageName, handlerTableClass).build();
+        System.out.println(file.toString());
+        try {
+            file.writeTo(mFiler);
+            info("generating file for %s", TypeUtils.URL_HANDLER_TABLE.toString());
+        } catch (IOException e) {
+            info("generating file failed, %s", e.getMessage());
+        }
+    }
+
+    private void processLeomaApi(RoundEnvironment roundEnv){
+        for(Element element : roundEnv.getElementsAnnotatedWith(LeomaApi.class)){
+            LeomaAnnotatedClass annotatedClass = getAnnotatedClass(element);
+            LeomaApiMethod method = new LeomaApiMethod(element);
+            annotatedClass.addLeomaApiMethod(method);
+        }
         FieldSpec hashMapField = FieldSpec.builder(ParameterizedTypeName.get(TypeUtils.HASHMAP, TypeUtils.STRING, TypeUtils.LEOMA_API_HANDLER),
                 "map", Modifier.PUBLIC, Modifier.STATIC).build();
 
@@ -72,33 +118,24 @@ public class LeomaApiProcessor extends AbstractProcessor {
         methodSpecBuilder.addStatement("map = new $T()", ParameterizedTypeName.get(TypeUtils.HASHMAP, TypeUtils.STRING, TypeUtils.LEOMA_API_HANDLER));
 
         for(LeomaAnnotatedClass annotatedClass:mAnnotatedClassMap.values()){
-            annotatedClass.addLeomaHandlers("map",methodSpecBuilder);
+            annotatedClass.addLeomaApiHandlers("map",methodSpecBuilder);
         }
 
-        TypeSpec handlerTableClass = TypeSpec.classBuilder(TypeUtils.HANDLER_TABLE)
+        TypeSpec handlerTableClass = TypeSpec.classBuilder(TypeUtils.API_HANDLER_TABLE)
                 .addModifiers(Modifier.PUBLIC)
                 .addField(hashMapField)
                 .addMethod(methodSpecBuilder.build())
                 .build();
 
-        String packageName = TypeUtils.HANDLER_TABLE.packageName();
+        String packageName = TypeUtils.API_HANDLER_TABLE.packageName();
 
         JavaFile file = JavaFile.builder(packageName, handlerTableClass).build();
         System.out.println(file.toString());
         try {
             file.writeTo(mFiler);
-            info("generating file for %s", TypeUtils.HANDLER_TABLE.toString());
+            info("generating file for %s", TypeUtils.API_HANDLER_TABLE.toString());
         } catch (IOException e) {
             info("generating file failed, %s", e.getMessage());
-        }
-        return true;
-    }
-
-    private void processLeomaApi(RoundEnvironment roundEnv){
-        for(Element element : roundEnv.getElementsAnnotatedWith(LeomaApi.class)){
-            LeomaAnnotatedClass annotatedClass = getAnnotatedClass(element);
-            LeomaApiMethod method = new LeomaApiMethod(element);
-            annotatedClass.addMethod(method);
         }
     }
 

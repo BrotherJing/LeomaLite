@@ -8,12 +8,12 @@ import com.google.gson.JsonObject;
 
 import java.io.UnsupportedEncodingException;
 
-import brotherjing.com.leomalite.view.LeomaNavigator;
 import brotherjing.com.leomalite.handler.LeomaApiHandler;
 import brotherjing.com.leomalite.model.DoNavigationInfo;
 import brotherjing.com.leomalite.model.PrepareNavigationInfo;
 import brotherjing.com.leomalite.util.Logger;
 import brotherjing.com.leomalite.view.LeomaActivity;
+import brotherjing.com.leomalite.view.LeomaNavigator;
 import brotherjing.com.leomalite.view.LeomaWebView;
 import brotherjing.com.leomalitedemo.api.CorpApi;
 import brotherjing.com.leomalitedemo.api.FinishHandlerUtil;
@@ -83,5 +83,4 @@ public class AppNavigationHandler {
             }
         };
     }
-
 }

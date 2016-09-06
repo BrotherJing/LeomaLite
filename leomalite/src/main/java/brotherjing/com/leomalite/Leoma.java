@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import brotherjing.com.leomainjector.LeomaHandlerFinder;
 import brotherjing.com.leomalite.exception.LeomaHandlerNotExistException;
 import brotherjing.com.leomalite.handler.LeomaApiHandler;
 import brotherjing.com.leomalite.handler.LeomaURLHandler;
@@ -27,7 +28,8 @@ public class Leoma {
     private HashMap<String,LeomaApiHandler> leomaApiHandlers;
     private HashMap<String,LeomaURLHandler> leomaURLHandlers;
 
-    public LeomaApiFinder leomaApiFinder;
+    public LeomaHandlerFinder<LeomaApiHandler> leomaApiFinder;
+    public LeomaHandlerFinder<LeomaURLHandler> leomaURLFinder;
 
     public synchronized static Leoma getInstance(){
         if(instance==null){
@@ -43,7 +45,7 @@ public class Leoma {
 
     public WebResourceResponse callHandler(String handlerName,String data,LeomaWebView webView)throws LeomaHandlerNotExistException{
         WebResourceResponse response = new WebResourceResponse("application/json", "UTF-8", null);
-        LeomaApiHandler handler = leomaApiFinder.getApiHandler(handlerName);
+        LeomaApiHandler handler = leomaApiFinder.getHandler(handlerName);
         if(handler==null){
             throw new LeomaHandlerNotExistException(handlerName);
         }
@@ -70,7 +72,14 @@ public class Leoma {
             System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
 
         }*/
-        for(HashMap.Entry<String,LeomaURLHandler> entry:leomaURLHandlers.entrySet()){
+        /*for(HashMap.Entry<String,LeomaURLHandler> entry:leomaURLHandlers.entrySet()){
+            Pattern pattern = Pattern.compile(entry.getKey());
+            Matcher matcher = pattern.matcher(url);
+            if(matcher.find()){
+                return entry.getValue();
+            }
+        }*/
+        for(HashMap.Entry<String,LeomaURLHandler> entry:leomaURLFinder.getMap().entrySet()){
             Pattern pattern = Pattern.compile(entry.getKey());
             Matcher matcher = pattern.matcher(url);
             if(matcher.find()){

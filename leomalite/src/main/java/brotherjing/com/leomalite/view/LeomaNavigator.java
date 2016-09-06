@@ -162,6 +162,7 @@ public class LeomaNavigator {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    Logger.i(currentLoadingFragment.getWebView().getInitURL());
                     currentLoadingFragment.showDrawingCache(LeomaBitmapCache.getDrawingCache(currentLoadingFragment.getWebView().getInitURL()));
                     doNavigation();
                     Logger.pin("actually do navigation");
