@@ -26,15 +26,18 @@ public class LeomaURLInterceptor {
             return null;
         }
 
-        webView.getActivity().runOnUiThread(new Runnable() {
+        /*webView.getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 WebResourceResponse response = new WebResourceResponse("application/json","UTF-8",null);
                 handler.execute(url, response, webView);
             }
         });
+        return new WebResourceResponse("application/json","UTF-8",null);*/
 
-        return new WebResourceResponse("application/json","UTF-8",null);
+        WebResourceResponse response = new WebResourceResponse("application/json","UTF-8",null);
+        handler.execute(url, response, webView);
+        return response;
     }
 
 }

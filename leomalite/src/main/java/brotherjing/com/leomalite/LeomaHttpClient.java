@@ -1,5 +1,7 @@
 package brotherjing.com.leomalite;
 
+import android.text.TextUtils;
+
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -8,6 +10,7 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
+import brotherjing.com.leomalite.util.Logger;
 import okhttp3.Callback;
 import okhttp3.ConnectionPool;
 import okhttp3.Interceptor;
@@ -67,7 +70,7 @@ public class LeomaHttpClient {
                 .url(url)
                 .post(body)
                 .build();
-        Response response = client.newCall(request).execute();
+        Response response = getHttpClient().newCall(request).execute();
         if(!response.isSuccessful())throw new IOException("unexpected http status: "+response);
         return gson.fromJson(response.body().charStream(),clazz);
     }
@@ -77,10 +80,11 @@ public class LeomaHttpClient {
     }
 
     public static void asyncGet(String url, Callback callback){
+        Logger.i("async get url: "+url);
         Request request = new Request.Builder()
                 .url(url)
                 .build();
-        client.newCall(request).enqueue(callback);
+        getHttpClient().newCall(request).enqueue(callback);
     }
 
     public static void asyncPostJson(String url, String json, Callback callback){
@@ -89,7 +93,7 @@ public class LeomaHttpClient {
                 .url(url)
                 .post(body)
                 .build();
-        client.newCall(request).enqueue(callback);
+        getHttpClient().newCall(request).enqueue(callback);
     }
 
     private static final class UserAgentInterceptor implements Interceptor{
@@ -97,10 +101,12 @@ public class LeomaHttpClient {
         @Override
         public Response intercept(Chain chain) throws IOException {
             final Request request = chain.request();
-            final Request requestWithUA = request.newBuilder()
-                    .removeHeader(HEADER_USER_AGENT)
-                    .addHeader(HEADER_USER_AGENT,LeomaConfig.USER_AGENT)
-                    .build();
+            final Request.Builder builder = request.newBuilder();
+            if(!TextUtils.isEmpty(LeomaConfig.USER_AGENT)){
+                builder.removeHeader(HEADER_USER_AGENT)
+                        .addHeader(HEADER_USER_AGENT,LeomaConfig.USER_AGENT);
+            }
+            final Request requestWithUA = builder.build();
             return chain.proceed(requestWithUA);
         }
     }
