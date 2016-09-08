@@ -8,11 +8,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import brotherjing.com.leomalite.util.Logger;
 import okhttp3.Callback;
 import okhttp3.ConnectionPool;
+import okhttp3.FormBody;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -85,6 +88,18 @@ public class LeomaHttpClient {
                 .url(url)
                 .build();
         getHttpClient().newCall(request).enqueue(callback);
+    }
+
+    public static void asyncPost(URL url, Callback callback, HashMap<String, String> map){
+        FormBody.Builder builder = new FormBody.Builder();
+        for(Map.Entry<String,String> entry:map.entrySet()){
+            builder.add(entry.getKey(),entry.getValue());
+        }
+        Request requestPost = new Request.Builder()
+                .url(url)
+                .post(builder.build())
+                .build();
+        getHttpClient().newCall(requestPost).enqueue(callback);
     }
 
     public static void asyncPostJson(String url, String json, Callback callback){

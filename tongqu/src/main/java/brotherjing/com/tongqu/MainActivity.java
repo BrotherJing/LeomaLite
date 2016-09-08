@@ -1,5 +1,9 @@
 package brotherjing.com.tongqu;
 
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+
 import brotherjing.com.leomalite.LeomaConfig;
 import brotherjing.com.leomalite.cache.LeomaManifestCacheHandler;
 import brotherjing.com.leomalite.interceptor.LeomaApiInterceptor;
@@ -24,7 +28,7 @@ public class MainActivity extends LeomaActivity {
         return new LeomaWebView(this, new LeomaApiInterceptor() {
             @Override
             protected boolean shouldRunOnMainThread(String method) {
-                return method.contains("view")||method.contains("app_navigator");
+                return method.contains("view")||method.contains("app");
             }
         }, new LeomaCacheInterceptor() {
             @Override
@@ -32,5 +36,20 @@ public class MainActivity extends LeomaActivity {
                 return null;
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        new MenuInflater(this).inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==R.id.action_refresh){
+            getLeomaNavigator().currentFragment().getWebView().reload();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

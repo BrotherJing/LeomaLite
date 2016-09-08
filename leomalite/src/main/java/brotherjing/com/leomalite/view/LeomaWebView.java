@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -136,6 +137,11 @@ public class LeomaWebView extends WebView {
     }
 
     private WebViewClient webViewClient = new WebViewClient(){
+
+        @Override
+        public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+            return super.shouldInterceptRequest(view, request);
+        }
 
         @SuppressWarnings("deprecation")
         @Override

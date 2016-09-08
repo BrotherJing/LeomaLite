@@ -145,6 +145,7 @@ public class LeomaNavigator {
 
         if(prepareNavigationInfo.getNavigateType()==PrepareNavigationInfo.NAVI_POP){
             performPop(prepareNavigationInfo.isAnimated());
+            currentFragment().getWebView().reload();
             finishNavigation(0, true);
         } else if(prepareNavigationInfo.getNavigateType() == PrepareNavigationInfo.NAVI_RELOAD && TextUtils.isEmpty(prepareNavigationInfo.getUrl())){
             currentLoadingFragment.getWebView().reload();
@@ -209,6 +210,7 @@ public class LeomaNavigator {
         if(currentIndex>0){
             Logger.i("navigator handle back press");
             performPop(true);
+            currentFragment().getWebView().reload();
             return true;
         }
         return false;
@@ -275,6 +277,7 @@ public class LeomaNavigator {
                                 }
                             }
                             slideTo.getWebView().executeJS("fw.Native.Page_CrossNotes(14)");
+                            slideTo.getWebView().reload();
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
