@@ -90,7 +90,7 @@ public class LeomaHttpClient {
         getHttpClient().newCall(request).enqueue(callback);
     }
 
-    public static void asyncPost(URL url, Callback callback, HashMap<String, String> map){
+    public static void asyncPost(String url, Map<String, String> map, Callback callback){
         FormBody.Builder builder = new FormBody.Builder();
         for(Map.Entry<String,String> entry:map.entrySet()){
             builder.add(entry.getKey(),entry.getValue());

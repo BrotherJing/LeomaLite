@@ -1,25 +1,27 @@
 package brotherjing.com.tongqu.handlers;
 
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebResourceResponse;
+import android.widget.Toast;
 
 import com.example.LeomaURL;
 import com.google.gson.Gson;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import brotherjing.com.leomalite.LeomaHttpClient;
+import brotherjing.com.leomalite.dispatcher.LeomaTaskDispatcher;
 import brotherjing.com.leomalite.handler.LeomaURLHandler;
-import brotherjing.com.leomalite.model.PrepareNavigationInfo;
 import brotherjing.com.leomalite.util.Logger;
-import brotherjing.com.leomalite.view.LeomaActivity;
-import brotherjing.com.leomalite.view.LeomaNavigator;
 import brotherjing.com.leomalite.view.LeomaWebView;
+import brotherjing.com.tongqu.App;
 import brotherjing.com.tongqu.model.StatusResponse;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -30,43 +32,11 @@ import okhttp3.Response;
  */
 public class TongquURLHandlers {
 
-    @LeomaURL("act/\\d*")
-    public static LeomaURLHandler actDetail(){
-        return new LeomaURLHandler() {
-            @Override
-            public void execute(URL url, WebResourceResponse response, LeomaWebView webView) {
-                PrepareNavigationInfo prepareNavigationInfo = new PrepareNavigationInfo();
-                prepareNavigationInfo.setUrl(url.toString());
-                prepareNavigationInfo.setAnimated(true);
-                prepareNavigationInfo.setNavigateType(PrepareNavigationInfo.NAVI_PUSH);
-                LeomaNavigator navigator = ((LeomaActivity)webView.getActivity()).getLeomaNavigator();
-                navigator.prepareNavigation(prepareNavigationInfo);
-                navigator.doFastNavigation();
-            }
-        };
-    }
-
-    @LeomaURL("user/*")
-    public static LeomaURLHandler login(){
-        return new LeomaURLHandler() {
-            @Override
-            public void execute(URL url, WebResourceResponse response, LeomaWebView webView) {
-                PrepareNavigationInfo prepareNavigationInfo = new PrepareNavigationInfo();
-                prepareNavigationInfo.setUrl(url.toString());
-                prepareNavigationInfo.setAnimated(true);
-                prepareNavigationInfo.setNavigateType(PrepareNavigationInfo.NAVI_PUSH);
-                LeomaNavigator navigator = ((LeomaActivity)webView.getActivity()).getLeomaNavigator();
-                navigator.prepareNavigation(prepareNavigationInfo);
-                navigator.doFastNavigation();
-            }
-        };
-    }
-
     @LeomaURL("api/*")
     public static LeomaURLHandler api(){
         return new LeomaURLHandler() {
             @Override
-            public void execute(URL url, final WebResourceResponse response, LeomaWebView webView) {
+            public void execute(URL url, final WebResourceResponse response, final LeomaWebView webView) {
                 String path = url.getPath()+"?"+url.getQuery();
                 Logger.i("handle url: "+path);
 
@@ -75,6 +45,46 @@ public class TongquURLHandlers {
                 try {
                     responseStream = new PipedInputStream(pipedOutputStream);
                     response.setData(responseStream);
+
+                    if(path.contains("login")){
+                        String[] queries = url.getQuery().split("&");
+                        Map<String,String> map = new HashMap<>();
+                        for(String query:queries){
+                            String[] keyAndValue = query.split("=");
+                            map.put(keyAndValue[0],keyAndValue[1]);
+                        }
+                        LeomaHttpClient.asyncPost("http://tongqu.me/index.php" + path, map, new Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                e.printStackTrace();
+                                StatusResponse statusResponse = new StatusResponse(e.getLocalizedMessage(), 1);
+                                try {
+                                    pipedOutputStream.write(new Gson().toJson(statusResponse).getBytes("utf-8"));
+                                    pipedOutputStream.flush();
+                                    pipedOutputStream.close();
+                                } catch (Exception e1) {
+                                    e1.printStackTrace();
+                                    response.setData(null);
+                                }
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response r) throws IOException {
+                                String[] cookies = r.header("Set-Cookie").split(";");
+                                for(String cookie : cookies){
+                                    String[] kv = cookie.split("=");
+                                    CookieManager.getInstance().setCookie(kv[0], kv[1]);
+                                }
+                                Logger.i("from native: "+CookieManager.getInstance().getCookie("tq_ci_session_id"));
+                                webView.setCookie(r.header("Set-Cookie"));
+                                pipedOutputStream.write(r.body().bytes());
+                                pipedOutputStream.flush();
+                                pipedOutputStream.close();
+                            }
+                        });
+                        return;
+                    }
+
                     LeomaHttpClient.asyncGet("http://tongqu.me/index.php"+path, new Callback() {
                         @Override
                         public void onFailure(Call call, IOException e) {

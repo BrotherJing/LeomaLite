@@ -3,6 +3,7 @@ package brotherjing.com.leomalite.view;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
+import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
@@ -64,6 +65,17 @@ public class LeomaWebView extends WebView {
                 loadUrl("javascript:"+jsCode);
             }
         });
+    }
+
+    public void setCookie(String cookieString){
+        String[] cookies = cookieString.split(";");
+        StringBuilder cookieBuilder = new StringBuilder();
+        for(String cookie:cookies){
+            if(cookie.trim().startsWith("domain")||cookie.trim().startsWith("path")||cookie.trim().startsWith("Max-Age"))continue;
+            cookieBuilder.append(cookie.trim()).append(";");
+        }
+        //executeJS("Native.SetCookie(\""+kv[0]+"\",\""+kv[1]+"\",14"+");");
+        executeJS("Native.SetCookie(\""+cookieBuilder.toString()+"\");");
     }
 
     public void setJSBackMethod(String JSBackMethod){

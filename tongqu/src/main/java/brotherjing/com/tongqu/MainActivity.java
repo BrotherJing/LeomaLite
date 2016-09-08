@@ -15,7 +15,7 @@ public class MainActivity extends LeomaActivity {
 
     @Override
     public String getFirstPageUrl() {
-        return LeomaConfig.BASE_URL+"/index.html";
+        return LeomaConfig.BASE_URL+"/login.html";
     }
 
     @Override
