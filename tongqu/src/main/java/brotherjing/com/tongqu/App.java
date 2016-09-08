@@ -22,7 +22,7 @@ public class App extends Application {
         context = this;
 
         LeomaConfig.init(this);
-        LeomaConfig.BASE_URL = "http://localhost:8899/";
+        LeomaConfig.BASE_URL = "http://localhost:8899";
         LeomaConfig.KEYWORD = "leoma";
 
         //Leoma.getInstance().registerURLHandlerForClass(TongquURLHandlers.class);

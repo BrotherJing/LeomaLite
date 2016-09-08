@@ -76,8 +76,10 @@ public class AppNavigationHandler {
             public void execute(JsonObject data, WebResourceResponse response, LeomaWebView webView) {
                 if(data!=null&&data.has("exist_app")&&data.get("exist_app").getAsInt()==1)
                     webView.getActivity().finish();
-                else if(data==null)
+                else {
+                    webView.setJSBackMethod(null);
                     webView.getActivity().onBackPressed();
+                }
             }
         };
     }

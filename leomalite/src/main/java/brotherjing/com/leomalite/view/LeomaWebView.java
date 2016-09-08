@@ -94,6 +94,9 @@ public class LeomaWebView extends WebView {
     public String getInitURL(){return initURL;}
 
     public void initWithURL(String url, JsonObject data){
+        if(url.startsWith("/")){
+            url = LeomaConfig.BASE_URL+url;
+        }
         Logger.i("init with url: "+url);
         initURL = url;
         if(data==null) {

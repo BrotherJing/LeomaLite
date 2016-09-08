@@ -22,7 +22,7 @@ public class LeomaURLInterceptor {
 
         final LeomaURLHandler handler = Leoma.getInstance().findHandlerForURL(urlStr);
         if(handler==null){
-            Logger.i("no url handler for: "+urlStr);
+            //Logger.i("no url handler for: "+urlStr);
             return null;
         }
 

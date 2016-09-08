@@ -13,6 +13,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 
+import brotherjing.com.leomalite.LeomaConfig;
 import brotherjing.com.leomalite.LeomaHttpClient;
 import brotherjing.com.leomalite.dispatcher.LeomaTaskDispatcher;
 import brotherjing.com.leomalite.util.Logger;
@@ -93,7 +94,9 @@ public class LeomaManifestCacheHandler {
         for(String query : queries){
             if(query.startsWith("fromurl")){
                 try {
-                    URL fromURL = new URL(URLDecoder.decode(query.split("=")[1], "utf-8"));
+                    String url = query.split("=")[1];
+                    if(url.startsWith("/"))url = LeomaConfig.BASE_URL+url;
+                    URL fromURL = new URL(URLDecoder.decode(url, "utf-8"));
                     if(LeomaCache.isResourceNewVersion(version,fromURL))
                         resourceURLs.add(fromURL);
                 }catch (MalformedURLException e){

@@ -11,7 +11,7 @@ public class MainActivity extends LeomaActivity {
 
     @Override
     public String getFirstPageUrl() {
-        return LeomaConfig.BASE_URL+"index.html";
+        return LeomaConfig.BASE_URL+"/index.html";
     }
 
     @Override
@@ -24,7 +24,7 @@ public class MainActivity extends LeomaActivity {
         return new LeomaWebView(this, new LeomaApiInterceptor() {
             @Override
             protected boolean shouldRunOnMainThread(String method) {
-                return method.contains("view");
+                return method.contains("view")||method.contains("app_navigator");
             }
         }, new LeomaCacheInterceptor() {
             @Override

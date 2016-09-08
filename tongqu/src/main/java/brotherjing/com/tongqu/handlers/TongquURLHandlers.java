@@ -67,7 +67,7 @@ public class TongquURLHandlers {
         return new LeomaURLHandler() {
             @Override
             public void execute(URL url, final WebResourceResponse response, LeomaWebView webView) {
-                String path = url.getPath();
+                String path = url.getPath()+"?"+url.getQuery();
                 Logger.i("handle url: "+path);
 
                 final PipedOutputStream pipedOutputStream = new PipedOutputStream();
