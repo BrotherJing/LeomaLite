@@ -32,10 +32,15 @@ public class AppNavigationHandler {
                     if (data == null) {
                         FinishHandlerUtil.finishHandlerSyncly(1, null, response);
                     }else{
-                        PrepareNavigationInfo prepareNavigationInfo = new Gson().fromJson(data,PrepareNavigationInfo.class);
-                        LeomaNavigator navigator = ((LeomaActivity)webView.getActivity()).getLeomaNavigator();
-                        navigator.prepareNavigation(prepareNavigationInfo);
-                        navigator.doFastNavigation();
+                        final PrepareNavigationInfo prepareNavigationInfo = new Gson().fromJson(data,PrepareNavigationInfo.class);
+                        final LeomaNavigator navigator = ((LeomaActivity)webView.getActivity()).getLeomaNavigator();
+                        ((LeomaActivity) webView.getActivity()).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                navigator.prepareNavigation(prepareNavigationInfo);
+                                navigator.doFastNavigation();
+                            }
+                        });
                         FinishHandlerUtil.finishHandlerSyncly(1,null,response);
                     }
                 }catch (UnsupportedEncodingException e){
@@ -54,13 +59,18 @@ public class AppNavigationHandler {
                 Logger.i("navigatePage, data is "+data.toString());
                 try{
                     if(data==null){
-                        FinishHandlerUtil.finishHandlerSyncly(1,null,response);
+                        FinishHandlerUtil.finishHandlerSyncly(1,"",response);
                     }else{
-                        DoNavigationInfo doNavigationInfo = new Gson().fromJson(data,DoNavigationInfo.class);
-                        LeomaNavigator navigator = ((LeomaActivity)webView.getActivity()).getLeomaNavigator();
-                        navigator.completeNavigationInfo(doNavigationInfo);
-                        //navigator.doNavigation();
-                        FinishHandlerUtil.finishHandlerSyncly(0,null,response);
+                        final DoNavigationInfo doNavigationInfo = new Gson().fromJson(data,DoNavigationInfo.class);
+                        final LeomaNavigator navigator = ((LeomaActivity)webView.getActivity()).getLeomaNavigator();
+                        ((LeomaActivity) webView.getActivity()).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                navigator.completeNavigationInfo(doNavigationInfo);
+                                //navigator.doNavigation();
+                            }
+                        });
+                        FinishHandlerUtil.finishHandlerSyncly(0,"",response);
                     }
                 }catch (UnsupportedEncodingException e){
                     response.setData(null);
@@ -73,13 +83,18 @@ public class AppNavigationHandler {
     public static LeomaApiHandler goBack(){
         return new LeomaApiHandler() {
             @Override
-            public void execute(JsonObject data, WebResourceResponse response, LeomaWebView webView) {
-                if(data!=null&&data.has("exist_app")&&data.get("exist_app").getAsInt()==1)
-                    webView.getActivity().finish();
-                else {
-                    webView.setJSBackMethod(null);
-                    webView.getActivity().onBackPressed();
-                }
+            public void execute(final JsonObject data, WebResourceResponse response,final LeomaWebView webView) {
+                webView.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(data!=null&&data.has("exist_app")&&data.get("exist_app").getAsInt()==1)
+                            webView.getActivity().finish();
+                        else {
+                            webView.setJSBackMethod(null);
+                            webView.getActivity().onBackPressed();
+                        }
+                    }
+                });
             }
         };
     }

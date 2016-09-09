@@ -1,5 +1,6 @@
 package brotherjing.com.tongqu.handlers;
 
+import android.text.TextUtils;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebResourceResponse;
@@ -37,7 +38,7 @@ public class TongquURLHandlers {
         return new LeomaURLHandler() {
             @Override
             public void execute(URL url, final WebResourceResponse response, final LeomaWebView webView) {
-                String path = url.getPath()+"?"+url.getQuery();
+                String path = url.getPath()+(TextUtils.isEmpty(url.getQuery())?"":"?"+url.getQuery());
                 Logger.i("handle url: "+path);
 
                 final PipedOutputStream pipedOutputStream = new PipedOutputStream();

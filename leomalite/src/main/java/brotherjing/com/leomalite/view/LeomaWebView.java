@@ -75,7 +75,7 @@ public class LeomaWebView extends WebView {
             cookieBuilder.append(cookie.trim()).append(";");
         }
         //executeJS("Native.SetCookie(\""+kv[0]+"\",\""+kv[1]+"\",14"+");");
-        executeJS("Native.SetCookie(\""+cookieBuilder.toString()+"\");");
+        executeJS("Cache.SetCookies(\""+cookieBuilder.toString()+"\");");
     }
 
     public void setJSBackMethod(String JSBackMethod){
@@ -146,6 +146,8 @@ public class LeomaWebView extends WebView {
 
         setHorizontalFadingEdgeEnabled(false);
         setVerticalFadingEdgeEnabled(false);
+
+        setWebContentsDebuggingEnabled(true);
     }
 
     private WebViewClient webViewClient = new WebViewClient(){

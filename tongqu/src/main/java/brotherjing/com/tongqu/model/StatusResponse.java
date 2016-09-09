@@ -31,4 +31,12 @@ public class StatusResponse {
     public void setError(int error) {
         this.error = error;
     }
+
+    @Override
+    public String toString() {
+        return "StatusResponse{" +
+                "error=" + error +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }

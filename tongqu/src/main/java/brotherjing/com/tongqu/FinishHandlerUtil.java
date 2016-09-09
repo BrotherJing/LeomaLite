@@ -8,6 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
+import brotherjing.com.leomalite.util.Logger;
 import brotherjing.com.tongqu.model.StatusResponse;
 
 /**
