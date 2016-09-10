@@ -1,7 +1,5 @@
 package brotherjing.com.leomalite.cache;
 
-import android.content.SharedPreferences;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -14,7 +12,7 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 
 import brotherjing.com.leomalite.LeomaConfig;
-import brotherjing.com.leomalite.LeomaHttpClient;
+import brotherjing.com.leomalite.http.LeomaHttpClient;
 import brotherjing.com.leomalite.dispatcher.LeomaTaskDispatcher;
 import brotherjing.com.leomalite.util.Logger;
 import brotherjing.com.leomalite.view.LeomaWebView;

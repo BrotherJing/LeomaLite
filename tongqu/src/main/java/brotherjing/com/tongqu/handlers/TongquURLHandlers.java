@@ -2,9 +2,7 @@ package brotherjing.com.tongqu.handlers;
 
 import android.text.TextUtils;
 import android.webkit.CookieManager;
-import android.webkit.CookieSyncManager;
 import android.webkit.WebResourceResponse;
-import android.widget.Toast;
 
 import com.example.LeomaURL;
 import com.google.gson.Gson;
@@ -17,13 +15,11 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import brotherjing.com.leomalite.LeomaHttpClient;
-import brotherjing.com.leomalite.dispatcher.LeomaTaskDispatcher;
+import brotherjing.com.leomalite.http.LeomaHttpClient;
 import brotherjing.com.leomalite.handler.LeomaAsyncURLHandler;
 import brotherjing.com.leomalite.handler.LeomaURLHandler;
 import brotherjing.com.leomalite.util.Logger;
 import brotherjing.com.leomalite.view.LeomaWebView;
-import brotherjing.com.tongqu.App;
 import brotherjing.com.tongqu.model.StatusResponse;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -63,11 +59,6 @@ public class TongquURLHandlers {
 
                         @Override
                         public void onResponse(Call call, Response r) throws IOException {
-                            String[] cookies = r.header("Set-Cookie").split(";");
-                            for(String cookie : cookies){
-                                String[] kv = cookie.split("=");
-                                CookieManager.getInstance().setCookie(kv[0], kv[1]);
-                            }
                             webView.setCookie(r.header("Set-Cookie"));
                             pipedOutputStream.write(r.body().bytes());
                             pipedOutputStream.flush();

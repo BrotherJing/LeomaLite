@@ -1,4 +1,4 @@
-package brotherjing.com.leomalite;
+package brotherjing.com.leomalite.http;
 
 import android.text.TextUtils;
 
@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import brotherjing.com.leomalite.LeomaConfig;
 import brotherjing.com.leomalite.util.Logger;
 import okhttp3.Callback;
 import okhttp3.ConnectionPool;
@@ -45,16 +46,21 @@ public class LeomaHttpClient {
                     .readTimeout(20, TimeUnit.SECONDS)
                     .writeTimeout(20, TimeUnit.SECONDS)
                     .cookieJar(new CookieJar() {
-                        private final HashMap<String, List<Cookie>> cookieStore= new HashMap<>();
+                        private final PersistentCookieStore cookieStore = new PersistentCookieStore(LeomaConfig.context);
+
                         @Override
                         public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
-                            cookieStore.put(url.host(), cookies);
+                            if (cookies != null && !cookies.isEmpty()) {
+                                for (Cookie cookie:cookies){
+                                    cookieStore.add(url,cookie);
+                                }
+                            }
                         }
 
                         @Override
                         public List<Cookie> loadForRequest(HttpUrl url) {
-                            List<Cookie> cookies = cookieStore.get(url.host());
-                            return cookies!=null?cookies:new ArrayList<Cookie>();
+                            List<Cookie> cookies = cookieStore.get(url);
+                            return cookies != null ? cookies : new ArrayList<Cookie>();
                         }
                     })
                     .addInterceptor(new UserAgentInterceptor())
