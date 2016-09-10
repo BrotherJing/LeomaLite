@@ -27,14 +27,13 @@ public class AppNavigationHandler {
         return new LeomaApiHandler(){
             @Override
             public void execute(JsonObject data, WebResourceResponse response, LeomaWebView webView) {
-                Logger.i("initPage, webview is "+webView.getInitURL());
                 try {
                     if (data == null) {
                         FinishHandlerUtil.finishHandlerSyncly(1, null, response);
                     }else{
                         final PrepareNavigationInfo prepareNavigationInfo = new Gson().fromJson(data,PrepareNavigationInfo.class);
                         final LeomaNavigator navigator = ((LeomaActivity)webView.getActivity()).getLeomaNavigator();
-                        ((LeomaActivity) webView.getActivity()).runOnUiThread(new Runnable() {
+                        webView.getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 navigator.prepareNavigation(prepareNavigationInfo);
@@ -56,14 +55,13 @@ public class AppNavigationHandler {
         return new LeomaApiHandler() {
             @Override
             public void execute(JsonObject data, WebResourceResponse response, LeomaWebView webView) {
-                Logger.i("navigatePage, data is "+data.toString());
                 try{
                     if(data==null){
                         FinishHandlerUtil.finishHandlerSyncly(1,"",response);
                     }else{
                         final DoNavigationInfo doNavigationInfo = new Gson().fromJson(data,DoNavigationInfo.class);
                         final LeomaNavigator navigator = ((LeomaActivity)webView.getActivity()).getLeomaNavigator();
-                        ((LeomaActivity) webView.getActivity()).runOnUiThread(new Runnable() {
+                        webView.getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 navigator.completeNavigationInfo(doNavigationInfo);

@@ -25,7 +25,6 @@ public class App extends Application {
         LeomaConfig.BASE_URL = "http://localhost:8899";
         LeomaConfig.KEYWORD = "leoma";
 
-        //Leoma.getInstance().registerURLHandlerForClass(TongquURLHandlers.class);
         LeomaInjector.inject(this);
     }
 

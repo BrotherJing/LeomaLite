@@ -19,6 +19,7 @@ import java.util.Map;
 
 import brotherjing.com.leomalite.LeomaHttpClient;
 import brotherjing.com.leomalite.dispatcher.LeomaTaskDispatcher;
+import brotherjing.com.leomalite.handler.LeomaAsyncURLHandler;
 import brotherjing.com.leomalite.handler.LeomaURLHandler;
 import brotherjing.com.leomalite.util.Logger;
 import brotherjing.com.leomalite.view.LeomaWebView;
@@ -35,6 +36,71 @@ public class TongquURLHandlers {
 
     @LeomaURL("api/*")
     public static LeomaURLHandler api(){
+        return new LeomaAsyncURLHandler() {
+            @Override
+            public void executeOnStream(URL url, final PipedOutputStream pipedOutputStream, final LeomaWebView webView) throws IOException {
+                String path = url.getPath()+(TextUtils.isEmpty(url.getQuery())?"":"?"+url.getQuery());
+                if(path.contains("login")){
+                    String[] queries = url.getQuery().split("&");
+                    Map<String,String> map = new HashMap<>();
+                    for(String query:queries){
+                        String[] keyAndValue = query.split("=");
+                        map.put(keyAndValue[0],keyAndValue[1]);
+                    }
+                    LeomaHttpClient.asyncPost("http://tongqu.me/index.php" + path, map, new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            e.printStackTrace();
+                            StatusResponse statusResponse = new StatusResponse(e.getLocalizedMessage(), 1);
+                            try {
+                                pipedOutputStream.write(new Gson().toJson(statusResponse).getBytes("utf-8"));
+                                pipedOutputStream.flush();
+                                pipedOutputStream.close();
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onResponse(Call call, Response r) throws IOException {
+                            String[] cookies = r.header("Set-Cookie").split(";");
+                            for(String cookie : cookies){
+                                String[] kv = cookie.split("=");
+                                CookieManager.getInstance().setCookie(kv[0], kv[1]);
+                            }
+                            webView.setCookie(r.header("Set-Cookie"));
+                            pipedOutputStream.write(r.body().bytes());
+                            pipedOutputStream.flush();
+                            pipedOutputStream.close();
+                        }
+                    });
+                }else{
+                    LeomaHttpClient.asyncGet("http://tongqu.me/index.php"+path, new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            e.printStackTrace();
+                            StatusResponse statusResponse = new StatusResponse(e.getLocalizedMessage(), 1);
+                            try {
+                                pipedOutputStream.write(new Gson().toJson(statusResponse).getBytes("utf-8"));
+                                pipedOutputStream.flush();
+                                pipedOutputStream.close();
+                            } catch (Exception e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+                        @Override
+                        public void onResponse(Call call, Response r) throws IOException {
+                            pipedOutputStream.write(r.body().bytes());
+                            pipedOutputStream.flush();
+                            pipedOutputStream.close();
+                        }
+                    });
+                }
+            }
+        };
+    }
+
+    public static LeomaURLHandler api2(){
         return new LeomaURLHandler() {
             @Override
             public void execute(URL url, final WebResourceResponse response, final LeomaWebView webView) {
