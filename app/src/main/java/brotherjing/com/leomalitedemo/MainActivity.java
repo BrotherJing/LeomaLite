@@ -29,7 +29,7 @@ public class MainActivity extends LeomaActivity {
 
     @Override
     public LeomaWebView createWebView() {
-        return new LeomaWebView(this, new LeomaApiInterceptor() {
+        return new LeomaWebView.Builder(this).setApiInterceptor(new LeomaApiInterceptor() {
             @Override
             protected boolean shouldRunOnMainThread(String method) {
                 return method!=null &&
@@ -38,7 +38,8 @@ public class MainActivity extends LeomaActivity {
                                 method.contains("native_scene")||
                                 method.contains("paste_board"));
             }
-        }, new LeomaCacheInterceptor() {
+        })
+        .setCacheInterceptor(new LeomaCacheInterceptor() {
             @Override
             protected LeomaManifestCacheHandler.OnLeomaCacheFinishListener getOnLeomaCacheFinishListener(LeomaWebView webView) {
                 return new LeomaManifestCacheHandler.OnLeomaCacheFinishListener() {
@@ -60,6 +61,6 @@ public class MainActivity extends LeomaActivity {
                     }
                 };
             }
-        });
+        }).build();
     }
 }

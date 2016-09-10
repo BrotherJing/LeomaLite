@@ -15,7 +15,7 @@ import brotherjing.com.leomalite.view.LeomaWebView;
 /**
  * Created by jingyanga on 2016/7/25.
  */
-public abstract class LeomaCacheInterceptor {
+public class LeomaCacheInterceptor {
 
     public WebResourceResponse intercept(LeomaWebView webView, URL url){
         if(url.getPath().endsWith("manifest")){
@@ -33,6 +33,8 @@ public abstract class LeomaCacheInterceptor {
         return null;
     }
 
-    protected abstract LeomaManifestCacheHandler.OnLeomaCacheFinishListener getOnLeomaCacheFinishListener(LeomaWebView webView);
+    protected LeomaManifestCacheHandler.OnLeomaCacheFinishListener getOnLeomaCacheFinishListener(LeomaWebView webView){
+        return null;
+    }
 
 }

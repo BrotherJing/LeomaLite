@@ -45,8 +45,6 @@ public abstract class LeomaActivity extends AppCompatActivity {
         return (leomaNavigator!=null&&leomaNavigator.handleTouchEvent(ev))||super.dispatchTouchEvent(ev);
     }
 
-
-
     public LeomaNavigator getLeomaNavigator(){
         return leomaNavigator;
     }

@@ -13,7 +13,7 @@ import brotherjing.com.leomalite.view.LeomaWebView;
 /**
  * Created by jingyanga on 2016/7/25.
  */
-public abstract class LeomaApiInterceptor {
+public class LeomaApiInterceptor {
 
     public WebResourceResponse intercept(final LeomaWebView webView, URL url){
 
@@ -44,5 +44,7 @@ public abstract class LeomaApiInterceptor {
         return null;
     }
 
-    protected abstract boolean shouldRunOnMainThread(String method);
+    protected boolean shouldRunOnMainThread(String method){
+        return false;
+    }
 }

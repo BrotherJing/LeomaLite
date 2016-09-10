@@ -25,17 +25,14 @@ public class MainActivity extends LeomaActivity {
 
     @Override
     public LeomaWebView createWebView() {
-        return new LeomaWebView(this, new LeomaApiInterceptor() {
-            @Override
-            protected boolean shouldRunOnMainThread(String method) {
-                return method.contains("view");
-            }
-        }, new LeomaCacheInterceptor() {
-            @Override
-            protected LeomaManifestCacheHandler.OnLeomaCacheFinishListener getOnLeomaCacheFinishListener(LeomaWebView webView) {
-                return null;
-            }
-        });
+        return new LeomaWebView.Builder(this)
+                .setApiInterceptor(new LeomaApiInterceptor(){
+                    @Override
+                    protected boolean shouldRunOnMainThread(String method) {
+                        return method.contains("view");
+                    }
+                })
+                .build();
     }
 
     @Override

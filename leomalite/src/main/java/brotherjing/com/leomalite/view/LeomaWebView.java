@@ -41,12 +41,12 @@ public class LeomaWebView extends WebView {
     private String initURL;
     private String JSBackMethod;
 
-    public LeomaWebView(Activity activity, LeomaApiInterceptor leomaApiInterceptor, LeomaCacheInterceptor leomaCacheInterceptor) {
+    public LeomaWebView(Activity activity, LeomaApiInterceptor leomaApiInterceptor, LeomaURLInterceptor urlInterceptor, LeomaCacheInterceptor leomaCacheInterceptor) {
         super(activity);
         this.activity = activity;
         this.leomaApiInterceptor = leomaApiInterceptor;
         this.leomaCacheInterceptor = leomaCacheInterceptor;
-        this.leomaURLInterceptor = new LeomaURLInterceptor();
+        this.leomaURLInterceptor = urlInterceptor;
 
         setSettings();
         setWebViewClient(webViewClient);
@@ -203,6 +203,34 @@ public class LeomaWebView extends WebView {
 
     public interface OnLeomaWebViewLoadFinishListener{
         void onFinished(LeomaWebView webView);
+    }
+
+    public static class Builder{
+        private LeomaApiInterceptor apiInterceptor;
+        private LeomaURLInterceptor urlInterceptor;
+        private LeomaCacheInterceptor cacheInterceptor;
+        private Activity activity;
+        public Builder(Activity activity){
+            this.activity = activity;
+        }
+        public Builder setApiInterceptor(LeomaApiInterceptor interceptor){
+            this.apiInterceptor = interceptor;
+            return this;
+        }
+        public Builder setURLInterceptor(LeomaURLInterceptor interceptor){
+            this.urlInterceptor = interceptor;
+            return this;
+        }
+        public Builder setCacheInterceptor(LeomaCacheInterceptor interceptor){
+            this.cacheInterceptor = interceptor;
+            return this;
+        }
+        public LeomaWebView build(){
+            if(apiInterceptor==null)apiInterceptor = new LeomaApiInterceptor();
+            if(urlInterceptor==null)urlInterceptor = new LeomaURLInterceptor();
+            if(cacheInterceptor==null)cacheInterceptor = new LeomaCacheInterceptor();
+            return new LeomaWebView(activity, apiInterceptor, urlInterceptor, cacheInterceptor);
+        }
     }
 
 }
